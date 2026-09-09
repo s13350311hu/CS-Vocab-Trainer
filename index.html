@@ -1,47 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<!-- ================================================================
-     【自己修改指南】CS Vocab Trainer
-
-     這份版本特別加入「程式碼用途註解」，方便你自己維護。
-     大方向：
-     1. <style>      = 外觀 / 顏色 / 版面
-     2. <body>       = 畫面上的按鈕、區塊、文字
-     3. JavaScript   = 所有功能邏輯
-     4. WORDS        = 資工核心單字資料
-     5. GRAMMAR      = 國中／會考文法資料
-     6. SENIOR_GRAMMAR = 高中文法資料
-     7. TOEIC        = TOEIC 資料與分類
-     8. High School 7000 = 高中 7000 遠端詞庫載入／快取／例句補充
-     9. 測驗區         = 單字測驗、文法測驗、考試模式、計分
-    10. 錯題本區       = 錯誤次數、最近錯誤、熟練度、優先順序
-
-     【最常需要自己修改的位置】
-     - 改網站標題：找 <title>
-     - 改顏色：找「Design Tokens」
-     - 改首頁文字：找「DASHBOARD」
-     - 改資工單字：找「Core word bank / WORDS」
-     - 改高中文法：找「SENIOR_GRAMMAR」
-     - 改高中 7000 來源：找「HIGH_SCHOOL_7000_URL」
-     - 改例句樣式：找「function cardHTML」
-     - 改例句喇叭：找「example-speak / data-speak」
-     - 改單字測驗：找「buildVocabQuiz / answerVocab」
-     - 改文法測驗：找「buildGrammarQuiz / answerGrammar」
-     - 改錯題本：找「wrongMap / addWrong / renderWrongBook」
-     - 改每日進度：找「recordStudy / todayRecord」
-     - 改所有按鈕事件：找「Event wiring / function init」
-
-     這些註解只存在於原始碼，不會顯示在網頁畫面。
-     ================================================================ -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>CS Vocab Trainer · 高中7000＋完整高中文法＋TOEIC</title>
 <meta name="description" content="資工研究所英文單字訓練工具：內建 CS 核心詞庫、動態字典查詢、發音練習、克漏字、閃卡與每日進度追蹤。可嵌入 Google Sites。">
 <style>
-/* 【CSS：全站設計變數】
-   這裡集中管理背景色、文字色、重點色、圓角、陰影。
-   想改整個網站顏色，優先改這裡，不要一個元件一個元件改。 */
 /* ============ Design Tokens ============ */
 :root{
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang TC", "Microsoft JhengHei", sans-serif;
@@ -74,8 +38,6 @@
   --shadow:0 10px 26px -14px rgba(30,60,120,0.25);
 }
 
-/* 【CSS：全站基礎】
-   控制 body、字體、背景、基本間距與寬度。 */
 /* ============ Base ============ */
 *,*::before,*::after{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; }
@@ -93,8 +55,6 @@ body{
 }
 .wrap{ max-width:1080px; margin:0 auto; padding:16px 18px 60px; }
 
-/* 【CSS：頂端 Header】
-   控制 Logo、連續學習天數、今日進度與主題切換按鈕。 */
 /* ============ Header ============ */
 .topbar{
   position:sticky; top:0; z-index:50;
@@ -124,8 +84,6 @@ body{
 }
 .chip b{ color:var(--accent); font-weight:700; }
 
-/* 【CSS：主選單 Tabs】
-   控制上方「詞庫／測驗／錯題本／設定」等分頁按鈕。 */
 /* ============ Tabs ============ */
 .tabs{
   display:flex; gap:6px; flex-wrap:wrap; padding:4px 2px 12px;
@@ -144,8 +102,6 @@ body{
 .view.active{ display:block; }
 @keyframes fadeUp{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none;} }
 
-/* 【CSS：卡片與區塊】
-   大部分內容都放在 card / panel 裡，這裡改會影響整站卡片外觀。 */
 /* ============ Cards & Panels ============ */
 .card{
   background:var(--panel); border:1px solid var(--border);
@@ -161,8 +117,6 @@ body{
 .section-title::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg,var(--border-strong),transparent); }
 .sec-sub{ margin:-6px 0 14px; color:var(--text-faint); font-size:13px; }
 
-/* 【CSS：統計卡片】
-   首頁上的連續天數、今日學習、已掌握、難詞收藏。 */
 /* ============ Stat grid ============ */
 .stat-grid{
   display:grid; gap:12px;
@@ -182,14 +136,10 @@ body{
 .stat .v small{ font-size:13px; color:var(--text-faint); font-weight:400; }
 .stat .sub{ font-size:11.5px; color:var(--text-faint); margin-top:3px; }
 
-/* 【CSS：進度條】
-   今日目標與掌握度的橫向進度條。 */
 /* ============ Progress ============ */
 .pbar{ height:10px; border-radius:999px; background:var(--bg-soft); border:1px solid var(--border); overflow:hidden; }
 .pbar > i{ display:block; height:100%; width:0; border-radius:999px; background:var(--grad); transition:width .5s cubic-bezier(.4,0,.2,1); }
 
-/* 【CSS：單字卡片】
-   控制英文單字、音標、詞性、中文、例句、熟練度按鈕的外觀。 */
 /* ============ Word list / cards ============ */
 .search-row{ display:flex; gap:10px; flex-wrap:wrap; }
 .search-input{
@@ -252,8 +202,7 @@ body{
   display:inline-flex; align-items:center; justify-content:center; padding:0;
   transition:all .16s ease;
 }
-.speak svg,.speak-icon{ width:15px; height:15px; display:block; flex:none; }
-.example-speak{vertical-align:middle; margin-left:6px; flex:none;}
+.speak svg{ width:15px; height:15px; }
 .speak:hover{ background:var(--accent); color:#04141c; transform:scale(1.06); }
 
 .prof-btn{
@@ -279,8 +228,6 @@ body{
 .suggestion-score{font-family:var(--font-mono);font-size:12px;color:var(--text-faint)}
 
 
-/* 【CSS：學習中心／測驗】
-   控制選項、對錯顏色、回饋文字、錯題列。 */
 /* ============ Learning center / quiz ============ */
 .learning-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
 .learning-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:15px}
@@ -306,14 +253,10 @@ body{
 .wrong-row .word{font-family:var(--font-mono);font-weight:800}
 .wrong-row .meta{font-size:12px;color:var(--text-dim)}
 
-/* 【CSS：線上字典卡片】
-   動態從 DictionaryAPI 查到的單字會使用這類樣式。 */
 /* ============ Remote word card ============ */
 .remote-card{ border:1px dashed var(--border-strong); background:linear-gradient(180deg,var(--accent-glow),transparent 60%),var(--panel); }
 .remote-tag{ font-size:11px; color:var(--accent-2); font-weight:700; letter-spacing:.5px; }
 
-/* 【CSS：克漏字】
-   控制題目句子、底線、答案輸入框、提示。 */
 /* ============ Cloze ============ */
 .cloze-sentence{ font-size:19px; line-height:2.1; letter-spacing:.4px; }
 .blank{
@@ -340,8 +283,6 @@ body{
 .tag-answer{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .tag-word{ font-family:var(--font-mono); font-size:15px; font-weight:800; color:var(--accent-2); }
 
-/* 【CSS：閃卡】
-   控制前後翻面、英文單字、例句與卡片動畫。 */
 /* ============ Flashcard ============ */
 .flip-wrap{ perspective:1400px; }
 .flip{
@@ -369,8 +310,6 @@ body{
 .fc-nav{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:14px; flex-wrap:wrap; }
 .fc-progress{ font-family:var(--font-mono); color:var(--text-dim); font-size:13px; }
 
-/* 【CSS：錯題／筆記列】
-   控制錯題本與弱點分析列表。 */
 /* ============ Notebook rows ============ */
 .nb-row{
   display:flex; align-items:center; gap:12px; flex-wrap:wrap;
@@ -383,8 +322,6 @@ body{
   border:1px dashed var(--border); border-radius:12px;
 }
 
-/* 【CSS：設定】
-   控制學習目標、語速、匯入匯出、主題等設定元件。 */
 /* ============ Settings ============ */
 .set-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; padding:13px 0; border-bottom:1px solid var(--border); }
 .set-row:last-child{ border-bottom:0; }
@@ -402,8 +339,6 @@ input[type="number"].num{
 input[type="number"].num:focus{ border-color:var(--border-strong); box-shadow:0 0 0 3px var(--accent-glow); }
 input[type="file"]{ display:none; }
 
-/* 【CSS：提示訊息】
-   操作完成、錯誤、提醒等短暫訊息。 */
 /* ============ Toast ============ */
 #toast{
   position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
@@ -422,8 +357,6 @@ input[type="file"]{ display:none; }
 
 /* ============ RWD ============ */
 
-/* 【CSS：文法查詢】
-   國中文法、高中文法卡片與分類按鈕。 */
 /* ============ Grammar reference ============ */
 .grammar-search{display:flex;gap:10px;flex-wrap:wrap}
 .grammar-input{flex:1 1 300px;min-width:0;background:var(--panel-solid);color:var(--text);border:1px solid var(--border);border-radius:11px;padding:12px 14px;font-size:15px;font-family:var(--font-mono);outline:none}
@@ -451,9 +384,6 @@ input[type="file"]{ display:none; }
 </head>
 <body data-theme="dark">
 
-<!-- 【HTML：網站最上方】
-     Logo、連續學習天數、今日進度、深淺主題按鈕。
-     想改網站名稱先找這裡。 -->
 <!-- ================= HEADER ================= -->
 <header class="topbar">
   <div class="logo">
@@ -473,10 +403,7 @@ input[type="file"]{ display:none; }
 
 <div class="wrap">
 
-  <!-- 【HTML：主功能選單】
-     每顆 button 的 data-view 會對應下面的 section id。
-     新增功能時，通常要「新增 tab + 新增 view」。 -->
-<!-- ================= TABS ================= -->
+  <!-- ================= TABS ================= -->
   <nav class="tabs" aria-label="主要功能">
     <button class="tab active" data-view="dashboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
@@ -486,10 +413,6 @@ input[type="file"]{ display:none; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       詞庫
     </button>
-    <button class="tab" data-view="high-school">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 0 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M4 5h16"/></svg>
-      高中單字
-    </button>
     <button class="tab" data-view="practice">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       克漏字
@@ -497,10 +420,6 @@ input[type="file"]{ display:none; }
     <button class="tab" data-view="grammar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h6M8 16h8"/></svg>
       文法
-    </button>
-    <button class="tab" data-view="senior-grammar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h16M4 19h10"/><path d="M16 16l4 4"/></svg>
-      高中文法
     </button>
     <button class="tab" data-view="toeic">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h11M4 19h16"/><circle cx="18" cy="12" r="2"/></svg>
@@ -522,6 +441,9 @@ input[type="file"]{ display:none; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M6 17V5h12v12"/><path d="M9 8h6M9 12h6"/></svg>
       學習中心
     </button>
+    <button class="tab" data-view="analytics2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16"/><path d="M7 15l4-5 3 3 5-7"/></svg>學習分析</button>
+    <button class="tab" data-view="review2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/><path d="M18 14v6M15 17h6"/></svg>智慧複習</button>
+    <button class="tab" data-view="exam2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>考試模式</button>
     <button class="tab" data-view="flashcards">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
       閃卡
@@ -532,9 +454,7 @@ input[type="file"]{ display:none; }
     </button>
   </nav>
 
-  <!-- 【HTML：首頁儀表板】
-     顯示每日目標、掌握度、難詞、快速開始按鈕。 -->
-<!-- ================= DASHBOARD ================= -->
+  <!-- ================= DASHBOARD ================= -->
   <section class="view active" id="view-dashboard">
     <div class="stat-grid">
       <div class="stat">
@@ -592,14 +512,17 @@ input[type="file"]{ display:none; }
     </div>
   </section>
 
-  <!-- 【HTML：一般詞庫】
-     搜尋英文、拼字建議、分類篩選、單字卡片都在這裡。 -->
-<!-- ================= LIBRARY ================= -->
+  <!-- ================= LIBRARY ================= -->
   <section class="view" id="view-library">
     <div class="section-title" style="margin-top:0">搜尋與動態查詢</div>
     <div class="card">
       <div class="search-row">
-        <input type="text" id="searchInput" class="search-input" placeholder="輸入英文單字（拼字錯誤也沒關係，例如：abstracion、schedul）" autocomplete="off" spellcheck="false">
+        <select id="searchMode" class="search-input" style="flex:0 0 150px;font-family:var(--font-sans)">
+          <option value="all">英文／中文反查</option>
+          <option value="en">英文單字</option>
+          <option value="zh">中文意思</option>
+        </select>
+        <input type="text" id="searchInput" class="search-input" placeholder="輸入英文、中文意思或拼字，例如：abstracion、營收" autocomplete="off" spellcheck="false">
         <button class="btn primary" id="searchBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>查詢</button>
         <button class="btn" id="dailyBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>每日抽詞</button>
       </div>
@@ -615,38 +538,14 @@ input[type="file"]{ display:none; }
     <div id="wordList"></div>
   </section>
 
-  <!-- ================= HIGH SCHOOL VOCAB ================= -->
-  <section class="view" id="view-high-school">
-    <div class="section-title" style="margin-top:0">高中 7000 單字</div>
-    <div class="card">
-      <div class="search-row">
-        <input type="text" id="highSchoolSearch" class="search-input" placeholder="搜尋高中單字，例如：abandon、attitude、significant…" autocomplete="off" spellcheck="false">
-        <button class="btn primary" id="highSchoolSearchBtn">查詢</button>
-        <button class="btn" id="highSchoolAllBtn">顯示全部</button>
-        <button class="btn" id="highSchoolRandomBtn">隨機抽 20</button>
-      </div>
-      <p class="sec-sub" style="margin:10px 0 0">專用高中詞庫介面：以台灣高中英文參考詞彙表為來源；資料載入後會快取到瀏覽器，發音與英文例句可按需由公開字典補充。</p>
-      <div id="highSchoolStatus" class="feedback info" style="margin-top:8px"></div>
-    </div>
-    <div class="section-title">高中單字狀態</div>
-    <div class="cats">
-      <button class="cat active" type="button" disabled>高中 7000 單</button>
-      <span class="chip"><b id="highSchoolLoadedCount">0</b> 個已載入</span>
-    </div>
-    <div class="section-title">單字列表</div>
-    <div id="highSchoolList"></div>
-  </section>
-
-  <!-- 【HTML：克漏字】
-     題目、輸入框、送出、下一題與朗讀。 -->
-<!-- ================= PRACTICE (Cloze) ================= -->
+  <!-- ================= PRACTICE (Cloze) ================= -->
   <section class="view" id="view-practice">
     <div class="section-title" style="margin-top:0">克漏字填空練習</div>
     <div class="card">
       <div class="tag-answer">
         <span class="tag-word" id="clozeWord"></span>
         <span class="wc-pos" id="clozePos"></span>
-        <button class="speak" id="clozeSpeak" title="朗讀單字"><svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+        <button class="speak" id="clozeSpeak" title="朗讀單字"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
       </div>
       <p class="cloze-sentence" id="clozeSentence" style="margin:14px 0 4px"></p>
       <p class="sec-sub" id="clozeHint" style="margin:2px 0 0">提示：請輸入正確單字（首字母提示見下方底線）</p>
@@ -663,8 +562,7 @@ input[type="file"]{ display:none; }
     </div>
   </section>
 
-  <!-- 【HTML：國中／會考文法查詢】 -->
-<!-- ================= GRAMMAR ================= -->
+  <!-- ================= GRAMMAR ================= -->
   <section class="view" id="view-grammar">
     <div class="section-title" style="margin-top:0">國中會考英文文法查詢</div>
     <div class="card">
@@ -681,8 +579,7 @@ input[type="file"]{ display:none; }
     <div id="grammarList" class="grammar-grid"></div>
   </section>
 
-  <!-- 【HTML：高中完整文法】 -->
-<!-- ================= SENIOR GRAMMAR ================= -->
+  <!-- ================= SENIOR GRAMMAR ================= -->
   <section class="view" id="view-senior-grammar">
     <div class="section-title" style="margin-top:0">高中英文文法完整查詢</div>
     <div class="card">
@@ -699,8 +596,7 @@ input[type="file"]{ display:none; }
     <div id="seniorGrammarList"></div>
   </section>
 
-  <!-- 【HTML：TOEIC 詞庫】 -->
-<!-- ================= TOEIC ================= -->
+  <!-- ================= TOEIC ================= -->
   <section class="view" id="view-toeic">
     <div class="section-title" style="margin-top:0">TOEIC 常見單字（英文母語發音）查詢</div>
     <div class="card">
@@ -718,9 +614,7 @@ input[type="file"]{ display:none; }
   </section>
 
 
-  <!-- 【HTML：學習中心】
-     今日學習、測驗統計、任務進度與弱點分析。 -->
-<!-- ================= LEARNING CENTER ================= -->
+  <!-- ================= LEARNING CENTER ================= -->
   <section class="view" id="view-learning">
     <div class="section-title" style="margin-top:0">學習中心</div>
     <div class="learning-grid">
@@ -744,77 +638,86 @@ input[type="file"]{ display:none; }
     <div class="card" id="weakAnalysisBox"></div>
   </section>
 
-  <!-- 【HTML：單字測驗畫面】
-     模式按鈕、題目、四選一、拼字輸入、計時器、下一題。 -->
-<!-- ================= VOCAB QUIZ ================= -->
+  <!-- ================= VOCAB QUIZ ================= -->
   <section class="view" id="view-vocab-quiz">
-    <div class="section-title" style="margin-top:0">測驗中心</div>
+    <div class="section-title" style="margin-top:0">單字測驗</div>
     <div class="card">
-      <div class="quiz-modebar" id="vqModes">
-        <button class="quiz-mode active" data-mode="mc-en-zh">英文 → 中文</button>
-        <button class="quiz-mode" data-mode="mc-zh-en">中文 → 英文</button>
-        <button class="quiz-mode" data-mode="cloze-mc">例句填空</button>
-        <button class="quiz-mode" data-mode="spelling">拼字測驗</button>
-        <button class="quiz-mode" data-mode="listening">聽力測驗</button>
-        <button class="quiz-mode" data-mode="exam">考試模式</button>
-      </div>
-      <div class="quiz-exam-config" id="vqExamConfig" style="display:none">
-        <span class="stat-mini">考試題數</span>
-        <div class="seg" id="vqExamCountSeg"><button class="active" data-count="25">25 題</button><button data-count="50">50 題</button></div>
-        <div class="seg" id="vqExamTimeSeg"><button class="active" data-min="20">20 分鐘</button><button data-min="10">10 分鐘</button></div>
-      </div>
-      <div class="quiz-toolbar"><div class="quiz-sub" id="vqMeta">英文 → 中文</div><div><span class="quiz-progressline" id="vqProgress"></span> <span class="quiz-timer" id="vqTimer"></span></div></div>
+      <div class="quiz-sub" id="vqMeta">中文 → 英文</div>
+      <div class="search-row" style="margin-top:10px"><select id="vqMode" class="search-input" style="font-family:var(--font-sans);flex:0 0 220px"><option value="zh-en">中文 → 英文</option><option value="en-zh">英文 → 中文</option><option value="spell">拼字測驗</option><option value="listen">聽力測驗</option><option value="context">例句填空</option></select></div>
       <div class="quiz-question" id="vqQuestion">準備中…</div>
       <div class="quiz-options" id="vqOptions"></div>
-      <div class="answer-row" id="vqTypingRow" style="display:none"><input class="answer-input" id="vqTyping" autocomplete="off" spellcheck="false" placeholder="請輸入英文單字…"><button class="btn primary" id="vqSubmitTyping">送出</button></div>
       <div class="quiz-feedback" id="vqFeedback"></div>
       <div class="quiz-nav">
-        <button class="btn primary" id="vqNext">下一題</button>
-        <button class="btn" id="vqSpeak">播放／朗讀</button>
-        <button class="btn" id="vqStartExam" style="display:none">開始考試</button>
+        <button class="btn" id="vqNext">下一題</button>
+        <button class="btn" id="vqSpeak">朗讀</button>
         <button class="btn" data-goto="learning">回學習中心</button>
       </div>
-      <div class="quiz-statline" id="vqStats"></div>
     </div>
   </section>
 
-  <!-- 【HTML：文法測驗畫面】
-     題目、四選一、考試模式與倒數。 -->
-<!-- ================= GRAMMAR QUIZ ================= -->
+  <!-- ================= GRAMMAR QUIZ ================= -->
   <section class="view" id="view-grammar-quiz">
     <div class="section-title" style="margin-top:0">文法測驗</div>
     <div class="card">
-      <div class="quiz-modebar" id="gqModes"><button class="quiz-mode active" data-gmode="mc">文法四選一</button><button class="quiz-mode" data-gmode="exam">大考／會考模式</button></div>
-      <div class="quiz-toolbar"><div class="quiz-sub" id="gqMeta">文法四選一</div><div><span class="quiz-progressline" id="gqProgress"></span><span class="quiz-timer" id="gqTimer"></span></div></div>
+      <div class="quiz-sub" id="gqMeta">高中／會考</div>
       <div class="quiz-question" id="gqQuestion">準備中…</div>
       <div class="quiz-options" id="gqOptions"></div>
       <div class="quiz-feedback" id="gqFeedback"></div>
       <div class="quiz-nav">
-        <button class="btn primary" id="gqNext">下一題</button>
+        <button class="btn" id="gqNext">下一題</button>
         <button class="btn" data-goto="learning">回學習中心</button>
       </div>
-      <div class="quiz-statline" id="gqStats"></div>
     </div>
   </section>
 
-  <!-- 【HTML：錯題本】
-     顯示錯誤次數、最近錯誤、連續答對與優先複習狀態。 -->
-<!-- ================= WRONG BOOK ================= -->
+  <!-- ================= WRONG BOOK ================= -->
   <section class="view" id="view-wrongbook">
-    <div class="section-title" style="margin-top:0">智慧錯題本</div>
+    <div class="section-title" style="margin-top:0">錯題本</div>
     <div class="card">
       <div class="search-row">
-        <input type="text" id="wrongSearch" class="search-input" placeholder="搜尋錯題／單字／文法…" autocomplete="off" spellcheck="false">
-        <button class="btn primary" id="wrongQuizBtn">立即複習高優先錯題</button>
+        <input type="text" id="wrongSearch" class="search-input" placeholder="搜尋錯題…" autocomplete="off" spellcheck="false">
+        <button class="btn primary" id="wrongQuizBtn">開始錯題複習</button>
       </div>
-      <p class="sec-sub">系統會追蹤錯誤次數、最後錯誤時間、連續答對次數與熟練度；連續答對 3 次以上才會逐步降低複習優先級。</p>
+      <p class="sec-sub">答錯的單字與文法會自動收錄。</p>
     </div>
     <div id="wrongBookList"></div>
   </section>
 
-  <!-- 【HTML：閃卡】
-     卡片正反面、例句、朗讀與熟練度按鈕。 -->
-<!-- ================= FLASHCARDS ================= -->
+
+  <section class="view" id="view-analytics2">
+    <div class="section-title" style="margin-top:0">學習分析</div>
+    <div class="learning-grid">
+      <div class="learning-card"><div class="lbl">累計測驗</div><div class="num" id="anTotal2">0</div></div>
+      <div class="learning-card"><div class="lbl">總正確率</div><div class="num" id="anAcc2">0%</div></div>
+      <div class="learning-card"><div class="lbl">連續學習</div><div class="num" id="anStreak2">0</div><div class="lbl">天</div></div>
+      <div class="learning-card"><div class="lbl">已掌握</div><div class="num" id="anMastered2">0</div><div class="lbl">字</div></div>
+    </div>
+    <div class="section-title">近 7 天學習量</div><div class="card" id="weekChart2"></div>
+    <div class="section-title">最常錯誤</div><div class="card" id="weakRanking2"></div>
+    <div class="section-title">各詞庫掌握度</div><div class="card" id="categoryMastery2"></div>
+  </section>
+  <section class="view" id="view-review2">
+    <div class="section-title" style="margin-top:0">今日智慧複習</div>
+    <div class="card"><div class="learning-grid">
+      <div class="learning-card"><div class="lbl">今日到期</div><div class="num" id="dueCount2">0</div><div class="lbl">字</div></div>
+      <div class="learning-card"><div class="lbl">新單字</div><div class="num" id="newCount2">0</div></div>
+      <div class="learning-card"><div class="lbl">高優先弱項</div><div class="num" id="highPriority2">0</div></div>
+      <div class="learning-card"><div class="lbl">今日目標</div><div class="num" id="goalProgress2">0%</div></div>
+    </div><div class="quiz-nav"><button class="btn primary" id="startDue2">開始到期複習</button><button class="btn" id="startWeak2">只複習弱項</button></div></div>
+    <div id="dueList2"></div>
+  </section>
+  <section class="view" id="view-exam2">
+    <div class="section-title" style="margin-top:0">正式考試模式</div>
+    <div class="card" id="examSetup2">
+      <div class="set-row"><div><div class="lbl">考試範圍</div><div class="hint">單字、文法、TOEIC 或綜合</div></div><div class="seg" id="examTypeSeg2"><button data-exam-type="vocab" class="active">單字</button><button data-exam-type="grammar">文法</button><button data-exam-type="toeic">TOEIC</button><button data-exam-type="mixed">綜合</button></div></div>
+      <div class="set-row"><div><div class="lbl">題數</div></div><input class="num" id="examCount2" type="number" min="10" max="50" step="5" value="20"></div>
+      <div class="set-row"><div><div class="lbl">時間（分鐘）</div><div class="hint">0 = 不限時</div></div><input class="num" id="examMinutes2" type="number" min="0" max="180" value="20"></div>
+      <button class="btn primary" id="examStart2">開始考試</button>
+    </div>
+    <div class="card" id="examRun2" style="display:none"><div class="quiz-sub" id="examProgress2"></div><div class="quiz-question" id="examQuestion2"></div><div class="quiz-options" id="examOptions2"></div><div class="quiz-feedback" id="examFeedback2"></div><div class="quiz-nav"><button class="btn" id="examNext2">下一題</button><button class="btn" id="examFinish2">交卷</button></div></div>
+    <div class="card" id="examResult2" style="display:none"><div class="learning-grid"><div class="learning-card"><div class="lbl">得分</div><div class="num" id="examScore2">0</div></div><div class="learning-card"><div class="lbl">答對</div><div class="num" id="examCorrect2">0</div></div><div class="learning-card"><div class="lbl">答錯</div><div class="num" id="examWrong2">0</div></div><div class="learning-card"><div class="lbl">正確率</div><div class="num" id="examPct2">0%</div></div></div><p class="quiz-sub" id="examAdvice2"></p><button class="btn primary" id="examRestart2">再考一次</button></div>
+  </section>
+  <!-- ================= FLASHCARDS ================= -->
   <section class="view" id="view-flashcards">
     <div class="section-title" style="margin-top:0">全部單字閃卡複習</div>
     <div class="sec-sub" id="fcSourceHint">閃卡牌組包含目前所有已載入的單字：資工核心、高中 7000、TOEIC；可使用洗牌隨機複習。</div>
@@ -825,7 +728,7 @@ input[type="file"]{ display:none; }
           <div class="fc-word" id="fcWord"></div>
           <div class="fc-ph" id="fcPh"></div>
           <div class="fc-pos" id="fcPos"></div>
-          <button class="speak" id="fcSpeak" style="margin-top:6px" title="朗讀"><svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+          <button class="speak" id="fcSpeak" style="margin-top:6px" title="朗讀"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
           <div class="fc-tap">點擊卡片翻面查看釋義</div>
         </div>
         <div class="face back" id="fcBack">
@@ -833,7 +736,7 @@ input[type="file"]{ display:none; }
           <div class="fc-ex" id="fcEx"></div>
           <div class="fc-ex-zh" id="fcExZh"></div>
           <div class="fc-deriv" id="fcDeriv"></div>
-          <button class="speak" id="fcSpeakEx" style="margin-top:4px" title="朗讀例句"><svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+          <button class="speak" id="fcSpeakEx" style="margin-top:4px" title="朗讀例句"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
         </div>
       </div>
     </div>
@@ -914,10 +817,6 @@ input[type="file"]{ display:none; }
    CS Vocab Trainer — 資工研究所英文單字訓練器（單一檔案）
    ===================================================================== */
 
-/* 【JS：核心資料庫／分類】
-   CATEGORIES = 類別名稱。
-   WORDS = 內建資工單字資料。
-   想新增一個資工單字，最簡單的方法就是在 WORDS 裡新增一筆物件。 */
 /* ---------------- Core word bank ---------------- */
 const CATEGORIES = [
   "Data Structures",
@@ -1974,9 +1873,7 @@ const WORDS = [
 const LS_PREFIX = "csVocab_";
 const dateKey = d => d.toISOString().slice(0,10);
 
-// 【功能：從 localStorage 讀取資料】k 是鍵名；讀不到時回傳 fallback。
 function load(k, fallback){ try{ const v = localStorage.getItem(LS_PREFIX + k); return v === null ? fallback : JSON.parse(v); }catch(e){ return fallback; } }
-// 【功能：把資料寫入 localStorage】所有學習進度會透過它保存。
 function save(k, v){ try{ localStorage.setItem(LS_PREFIX + k, JSON.stringify(v)); }catch(e){} }
 
 const state = {
@@ -1988,13 +1885,11 @@ const state = {
 const weakWords = () => Object.keys(state.proficiency).filter(w => state.proficiency[w] === "review");
 const masteredWords = () => Object.keys(state.proficiency).filter(w => state.proficiency[w] === "mastered");
 const todayKey = () => dateKey(new Date());
-// 【功能：取得今天的學習紀錄】每天以日期做為獨立紀錄。
 function todayRecord(){
   const k = todayKey();
   if(!state.daily[k]) state.daily[k] = { count: 0, words: [] };
   return state.daily[k];
 }
-// 【功能：更新連續學習天數】今天有學習時會更新 streak。
 function touchStreak(){
   const t = todayKey(), s = state.streak;
   if(s.lastDate === t) return;
@@ -2003,7 +1898,6 @@ function touchStreak(){
   s.lastDate = t;
   persist();
 }
-// 【功能：記錄學習過哪個單字】會增加今日進度並更新連續學習。
 function recordStudy(word){
   const rec = todayRecord();
   if(!rec.words.includes(word)){ rec.words.push(word); rec.count++; }
@@ -2011,28 +1905,18 @@ function recordStudy(word){
   persist();
   renderHeader();
 }
-// 【功能：一次保存所有主要設定與學習資料】
 function persist(){ save("settings", state.settings); save("streak", state.streak); save("daily", state.daily); save("proficiency", state.proficiency); }
 
-/* 【JS：單字查詢工具】
-   負責依英文單字找本地資料、分類名稱轉換，以及產生單字卡 HTML。 */
 /* ---------------- Word lookup helpers ---------------- */
 const byId = w => w.word.toLowerCase();
 const lookupLocal = q => WORDS.find(x => byId(x) === q) || WORDS.find(x => byId(x).startsWith(q));
 const CAT_NAMES = { "Academic High-Frequency":"研究所學術高頻", "Machine Learning & AI":"ML / AI", "Compilers & PL":"編譯器 / 語言", "High School 7000":"高中 7000 單", "TOEIC Core":"TOEIC 常見職場單字" };
-// 【功能：把英文分類代碼轉成人看得懂的中文名稱】
 function catName(c){ return CAT_NAMES[c] || c; }
 
-// 【功能：產生「單字卡」的 HTML】
-// 【最重要的可修改位置之一】例句樣式、例句喇叭、熟練度按鈕都在這裡。
 function cardHTML(w, remote){
   const prof = state.proficiency[w.word];
-  const isHighSchool = w.source === "high-school-7000" || w.category === "High School 7000";
-  const safeEx = isHighSchool && !w.example ? '<span class="hs-example-text" data-hs-example="'+esc(w.word)+'">例句載入中…</span>' : (w.example ? w.example.replace(new RegExp("\\b" + escapeRegExp(w.word) + "\\b", "gi"), m => "<b>" + m + "</b>") : '<span style="color:var(--text-faint)">暫無例句；可搜尋後補充。</span>');
-  const exampleSpeaker = w.example ? ` <button class="speak example-speak" data-speak="${esc(w.example)}" title="朗讀例句" aria-label="朗讀例句"><svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>` : "";
-  const exampleLine = isHighSchool || w.example ? `<div class="wc-ex"><b>例句：</b>${safeEx}${exampleSpeaker}</div>` : `<div class="wc-ex">${safeEx}</div>`;
   return `
-  <div class="wc${remote ? " remote-card" : ""}${isHighSchool ? " hs-word-card" : ""}" data-hs-card="${isHighSchool ? esc(w.word) : ""}">
+  <div class="wc${remote ? " remote-card" : ""}">
     ${remote ? '<span class="remote-tag">● 線上字典即時查詢</span>' : ""}
     <div class="wc-head">
       <span class="wc-word">${esc(w.word)}</span>
@@ -2041,26 +1925,21 @@ function cardHTML(w, remote){
       <span class="wc-cat">${esc(catName(w.category || "General"))}</span>
     </div>
     <div class="wc-zh">${esc(w.zh)}</div>
-    ${exampleLine}
+    <div class="wc-ex">${w.example ? w.example.replace(new RegExp("\\b" + escapeRegExp(w.word) + "\\b", "gi"), m => "<b>" + m + "</b>") : "<span style=\"color:var(--text-faint)\">暫無例句；按查詢可由線上字典補充。</span>"} ${w.example ? (w.source === "toeic-core" ? `<button class="speak" data-speak-example-word="${esc(w.word)}" title="朗讀英文例句（以字典例句優先）"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>` : `<button class="speak" data-speak="${esc(w.example)}" title="朗讀例句"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>`) : ""}</div>
     <div class="wc-ex-zh">${esc(w.exampleZh || "")}</div>
     ${w.derivatives && w.derivatives.length ? `<div class="wc-deriv"><b>衍生 / 相關：</b>${w.derivatives.map(esc).join(" · ")}</div>` : ""}
     <div class="wc-foot">
-      ${isHighSchool ? "" : `<button class="speak" data-speak="${esc(w.word)}" title="朗讀單字"><svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>`}
+      <button class="speak" data-speak="${esc(w.word)}" title="朗讀單字"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
       <button class="prof-btn${prof === "too-easy" ? " on" : ""}" data-prof="too-easy" data-word="${esc(w.word)}">太簡單</button>
       <button class="prof-btn${prof === "review" ? " on" : ""}" data-prof="review" data-word="${esc(w.word)}">需複習</button>
       <button class="prof-btn${prof === "mastered" ? " on" : ""}" data-prof="mastered" data-word="${esc(w.word)}">完全掌握</button>
     </div>
   </div>`;
 }
-
 function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
-/* 【JS：語音朗讀】
-   使用瀏覽器 SpeechSynthesis。
-   speak(text) = 朗讀單字或整句英文。
-   例句旁的喇叭最後也會呼叫這個函式。 */
 /* ---------------- Speech ---------------- */
 let voices = [];
 function loadVoices(){ voices = window.speechSynthesis ? speechSynthesis.getVoices() : []; }
@@ -2073,7 +1952,6 @@ function pickVoice(){
       || english[0]
       || null;
 }
-// 【功能：朗讀文字】傳入什麼英文，就朗讀什麼英文。
 function speak(text){
   if(!("speechSynthesis" in window)){ toast("此瀏覽器不支援語音朗讀", "err"); return; }
   const spoken = String(text || "").trim();
@@ -2087,10 +1965,6 @@ function speak(text){
 }
 
 
-/* 【JS：高中 7000 詞庫】
-   下載公開高中英文參考詞彙表 → 解碼 → 解析 → 快取到 localStorage。
-   parseHighSchool7000 = 把原始文字轉成 WORDS 格式。
-   loadHighSchool7000 = 實際負責載入與快取。 */
 /* ---------------- High School 7000 word bank ----------------
    The public Taiwan high-school reference list is loaded once,
    converted into the same WORDS format, and cached locally.
@@ -2099,10 +1973,10 @@ function speak(text){
 ---------------------------------------------------------------- */
 const HIGH_SCHOOL_7000_URL =
   "https://raw.githubusercontent.com/mahavivo/english-wordlists/master/%E5%8F%B0%E7%81%A3%E9%AB%98%E4%B8%AD%E8%8B%B1%E6%96%87%E5%8F%83%E8%80%83%E8%A9%9E%E5%BD%99%E8%A1%A8.txt";
-const HIGH_SCHOOL_CACHE_KEY = "cs-vocab-high-school-7000-v5";
+const HIGH_SCHOOL_CACHE_KEY = "cs-vocab-high-school-7000-v4";
 
 const BAD_POS = new Set(["n.","v.","adj.","adv.","prep.","pron.","conj.","art.","aux.","num.","interj.","phr.",
-  "n./v.","v./n.","adj./n.","adv./adj.","prep./adv.","prop./n."]);
+  "n./v.","v./n.","adj./n.","adv./adj.","prep./adv."]);
 
 function looksLikeChineseMeaning(s){
   const t = String(s || "").trim();
@@ -2128,7 +2002,6 @@ function decodeBest(buffer){
   return best;
 }
 
-// 【功能：解析高中 7000 原始詞表】把文字轉成 word/pos/zh/example/category 物件。
 function parseHighSchool7000(text){
   const out = [];
   const seen = new Set(WORDS.map(w => String(w.word).toLowerCase()));
@@ -2151,7 +2024,7 @@ function parseHighSchool7000(text){
       zh = fields.slice(2).join(" ");
     }else{
       // General format: English headword + POS marker + Chinese meaning.
-      const m = line.match(/^([A-Za-z][A-Za-z' -]*?)\s+(prop\.\/n\.|n\.\/v\.|v\.\/n\.|adj\.\/n\.|adv\.\/adj\.|prep\.\/adv\.|n\.|v\.|adj\.|adv\.|prep\.|pron\.|conj\.|art\.|aux\.|num\.|interj\.|phr\.)\s*(.*)$/i);
+      const m = line.match(/^([A-Za-z][A-Za-z' -]*?)\s+(n\.\/v\.|v\.\/n\.|adj\.\/n\.|adv\.\/adj\.|prep\.\/adv\.|n\.|v\.|adj\.|adv\.|prep\.|pron\.|conj\.|art\.|aux\.|num\.|interj\.|phr\.)\s*(.*)$/i);
       if(m){
         word = m[1].trim();
         pos = m[2].trim();
@@ -2162,10 +2035,6 @@ function parseHighSchool7000(text){
     word = word.toLowerCase().trim();
     pos = pos.trim();
     zh = zh.replace(/\s+/g," ").trim();
-    // Clean a few source rows that duplicate the POS marker in the meaning.
-    if(pos && zh.toLowerCase().startsWith(pos.toLowerCase())){
-      zh = zh.slice(pos.length).replace(/^\s+/, "");
-    }
 
     if(!word || BAD_POS.has(word) || !/^[a-z][a-z' -]*$/i.test(word)) continue;
     if(word.length > 60 || seen.has(word)) continue;
@@ -2194,7 +2063,6 @@ function clearOldHighSchoolCaches(){
   });
 }
 
-// 【功能：載入高中 7000】先找快取，沒有才從網址下載。
 async function loadHighSchool7000(){
   clearOldHighSchoolCaches();
 
@@ -2242,9 +2110,6 @@ async function loadHighSchool7000(){
   }
 }
 
-/* 【JS：國中／會考文法資料】
-   GRAMMAR = 文法資料陣列。
-   renderGrammar = 把資料畫到畫面上。 */
 /* ---------------- Junior high / exam grammar reference ---------------- */
 const GRAMMAR_CATEGORIES = [
   "基本句型", "名詞與冠詞", "代名詞", "動詞與時態", "助動詞", "否定與疑問",
@@ -2329,7 +2194,6 @@ function highlightExample(s, term){
   const re=new RegExp("("+escapeRegExp(term)+")","ig");
   return esc(s).replace(re,"<b>$1</b>");
 }
-// 【功能：搜尋並顯示國中文法】
 function renderGrammar(query=""){
   const q=query.trim().toLowerCase();
   let list=GRAMMAR.filter(g=>activeGrammarCat==="全部"||g.cat===activeGrammarCat);
@@ -2341,15 +2205,12 @@ function renderGrammar(query=""){
     <div class="g-head"><div class="g-title">${esc(g.title)}</div><span class="g-cat">${esc(g.cat)}</span></div>
     <div class="g-rule">${esc(g.rule)}</div>
     <div class="g-formula">${esc(g.formula)}</div>
-    ${g.ex.map((x,i)=>`<div class="g-ex">${highlightExample(x,q)} <button class="speak" data-speak="${esc(x)}" title="朗讀例句"><svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button><div class="g-zh">${esc(g.zh[i]||"")}</div></div>`).join("")}
+    ${g.ex.map((x,i)=>`<div class="g-ex">${highlightExample(x,q)} <button class="speak" data-speak="${esc(x)}" title="朗讀例句"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button><div class="g-zh">${esc(g.zh[i]||"")}</div></div>`).join("")}
     <div class="g-tip">會考提醒：${esc(g.tip)}</div>
   </div>`).join("");
 }
 
 
-/* 【JS：高中文法資料】
-   SENIOR_GRAMMAR = 高中文法資料陣列。
-   renderSeniorGrammar = 搜尋／分類後顯示。 */
 /* ---------------- Senior high grammar reference ---------------- */
 const SENIOR_GRAMMAR_CATEGORIES = [
   "詞類與句型", "主詞動詞一致", "時態與語態", "助動詞與情態", "不定詞", "動名詞", "分詞與分詞構句",
@@ -2506,7 +2367,6 @@ function renderSeniorGrammarCats(){
   if(!el) return;
   el.innerHTML=cats.map(c=>`<button class="g-catbtn${c===activeSeniorGrammarCat?" active":""}" data-sgcat="${esc(c)}">${esc(c)}</button>`).join("");
 }
-// 【功能：搜尋並顯示高中文法】
 function renderSeniorGrammar(query=""){
   const el=document.getElementById("seniorGrammarList");
   if(!el) return;
@@ -2520,15 +2380,12 @@ function renderSeniorGrammar(query=""){
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="wc-cat">${esc(g.cat)}</span><strong style="font-size:18px">${esc(g.title)}</strong></div>
     <p style="margin:10px 0 8px">${esc(g.rule)}</p>
     <pre style="white-space:pre-wrap;background:var(--bg-soft);padding:10px 12px;border-radius:9px;font-family:var(--font-mono);font-size:13px;margin:8px 0">${esc(g.formula)}</pre>
-    ${g.ex.map((x,i)=>`<div class="wc-ex"><b>例句：</b>${esc(x)} <button class="speak" data-speak="${esc(x)}" title="朗讀例句"><svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button></div><div class="wc-ex-zh">${esc(g.zh[i]||"")}</div>`).join("")}
+    ${g.ex.map((x,i)=>`<div class="wc-ex"><b>Example:</b> ${esc(x)} <button class="speak" data-speak="${esc(x)}" title="朗讀例句"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button></div><div class="wc-ex-zh">${esc(g.zh[i]||"")}</div>`).join("")}
     <div class="wc-deriv"><b>考試提醒：</b>${esc(g.tip)}</div>
   </div>`).join("");
 }
 
-/* 【JS：線上字典】
-   查不到本地單字時，向 DictionaryAPI 取得發音、例句等資訊。 */
 /* ---------------- Dictionary API (dynamic lookup) ---------------- */
-// 【功能：呼叫線上 DictionaryAPI】用於補發音、例句、詞性等資料。
 async function lookupDictionary(word){
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 8000);
@@ -2544,8 +2401,7 @@ async function lookupDictionary(word){
     let ex = "", exZh = "";
     outer:
     for(const mm of m){ for(const d of mm.definitions || []){ if(d.example){ ex = d.example; break outer; } } }
-    // Never invent a sentence for tests.
-    if(!ex) ex = "";
+    if(!ex) ex = e.word + " is a key term used in computer science contexts.";
     const phonetic = (e.phonetics || []).map(p => p.text).filter(Boolean)[0] || "";
     const derivs = (e.meanings || []).flatMap(x => (x.synonyms || []).slice(0,3)).slice(0,6);
     return { word: e.word, phonetic, pos, zh, example: ex, exampleZh: exZh, derivatives: derivs, category: "General" };
@@ -2561,10 +2417,7 @@ async function speakDictionaryExample(word, fallback=""){
   }
 }
 
-/* 【JS：首頁儀表板】
-   renderDashboard = 把 localStorage 的學習資料重新畫到首頁。 */
 /* ---------------- Rendering: dashboard ---------------- */
-// 【功能：重新繪製首頁統計】
 function renderDashboard(){
   const s = state.streak, goal = state.settings.goal;
   const rec = todayRecord();
@@ -2581,7 +2434,7 @@ function renderDashboard(){
   document.getElementById("barGoal").style.width = goalPct + "%";
   document.getElementById("goalCaption").textContent = "今天進度 " + rec.count + " / " + goal + " 字（" + goalPct + "%）";
 
-  const mpct = Math.min(100, Math.round(mastered / Math.max(1, normalizedFlashcardPool().length) * 100));
+  const mpct = Math.min(100, Math.round(mastered / WORDS.length * 100));
   document.getElementById("barMastered").style.width = mpct + "%";
   document.getElementById("masteredCaption").textContent = "已掌握 " + mastered + " / " + WORDS.length + " 字（" + mpct + "%）";
 
@@ -2592,7 +2445,7 @@ function renderDashboard(){
     box.innerHTML = weak.map(w => {
       const wd = lookupLocal(w) || { word: w, zh: "（線上字典單字）", example: "", exampleZh: "", derivatives: [], category: "General" };
       return `<div class="nb-row">
-        <span class="speak" data-speak="${esc(wd.word)}" title="朗讀"><svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
+        <span class="speak" data-speak="${esc(wd.word)}" title="朗讀"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
         <span class="nb-word">${esc(wd.word)}</span>
         <span style="flex:1; min-width:160px; color:var(--text-dim); font-size:13px">${esc(wd.zh)}</span>
         <button class="prof-btn" data-remove-weak="${esc(w)}" title="從難詞收藏本移除">取消收藏</button>
@@ -2602,10 +2455,6 @@ function renderDashboard(){
   }
 }
 
-/* 【JS：一般詞庫畫面】
-   renderCats = 類別按鈕。
-   renderList = 單字卡片列表。
-   renderLibrary = 依目前分類顯示資料。 */
 /* ---------------- Rendering: library ---------------- */
 let activeCat = "All";
 function renderCats(){
@@ -2613,14 +2462,12 @@ function renderCats(){
   document.getElementById("catsBox").innerHTML = cats.map(c =>
     `<button class="cat${c === activeCat ? " active" : ""}" data-cat="${esc(c)}">${c === "All" ? "全部（" + WORDS.length + "）" : esc(catName(c))}</button>`).join("");
 }
-// 【功能：把一組單字資料畫成多張單字卡】
 function renderList(words, title, sub){
   document.getElementById("listTitle").textContent = title;
   document.getElementById("listSub").textContent = sub || "";
   const el = document.getElementById("wordList");
   if(!words.length){ el.innerHTML = '<div class="empty">找不到符合條件的單字。</div>'; return; }
   el.innerHTML = words.map(w => cardHTML(w, false)).join("");
-  if(words.some(w => w && w.source === "high-school-7000")) attachHighSchoolExampleObserver();
 }
 function renderLibrary(){
   const words = activeCat === "All" ? WORDS : WORDS.filter(w => w.category === activeCat);
@@ -2638,10 +2485,6 @@ function renderDailyWords(){
   pool.forEach(w => recordStudy(w.word));
 }
 
-/* 【JS：克漏字】
-   clozePick = 選題。
-   nextCloze = 換題。
-   clozeSubmit = 判斷答案。 */
 /* ---------------- Rendering: cloze ---------------- */
 let clozeWord = null, clozeDone = false, clozeStack = [];
 function clozePick(){
@@ -2664,7 +2507,6 @@ function nextCloze(){
   document.getElementById("clozeFeedback").textContent = ""; document.getElementById("clozeFeedback").className = "feedback info";
   inp.focus();
 }
-// 【功能：判斷克漏字答案】正確／錯誤後更新學習進度。
 function clozeSubmit(){
   if(!clozeWord || clozeDone) return;
   const inp = document.getElementById("clozeInput");
@@ -2686,82 +2528,6 @@ function clozeSubmit(){
   }
 }
 
-/* 【JS：高中 7000 例句補充】
-   高中 7000 原始詞表主要提供單字與中文。
-   fetchHighSchoolExample = 查真正的英文例句。
-   attachHighSchoolExampleObserver = 看到尚未有例句的卡片後補資料。 */
-/* ---------------- High School example enrichment ---------------- */
-const HS_EXAMPLE_PENDING=new Set();
-// 【功能：取得高中 7000 的真正英文例句】
-async function fetchHighSchoolExample(w){
-  if(!w||w.example||HS_EXAMPLE_PENDING.has(w.word))return;
-  HS_EXAMPLE_PENDING.add(w.word);
-  try{
-    const remote=await lookupDictionary(w.word);
-    if(remote&&remote.example&&isGoodQuizSentence({...w,example:remote.example})){
-      w.example=remote.example;
-      const card=[...document.querySelectorAll(".hs-word-card")].find(c=>c.getAttribute("data-hs-card")===w.word);
-      const target=card?.querySelector(".hs-example-text");
-      if(target)target.outerHTML=`<span class="hs-example-text">${w.example.replace(new RegExp("\\b"+escapeRegExp(w.word)+"\\b","gi"),m=>"<b>"+m+"</b>")}</span> <button class="speak example-speak" data-speak="${esc(w.example)}" title="朗讀例句" aria-label="朗讀例句"><svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>`;
-      try{const cached=localStorage.getItem(HIGH_SCHOOL_CACHE_KEY);if(cached){const arr=JSON.parse(cached);const hit=arr.find(x=>x.word===w.word);if(hit){hit.example=w.example;localStorage.setItem(HIGH_SCHOOL_CACHE_KEY,JSON.stringify(arr));}}}catch(_){ }
-    }else{
-      const card=[...document.querySelectorAll(".hs-word-card")].find(c=>c.getAttribute("data-hs-card")===w.word);const target=card?.querySelector(".hs-example-text");if(target)target.textContent="目前沒有可用的自然例句";
-    }
-  }catch(_){
-    const card=[...document.querySelectorAll(".hs-word-card")].find(c=>c.getAttribute("data-hs-card")===w.word);const target=card?.querySelector(".hs-example-text");if(target)target.textContent="例句載入失敗，請稍後重試";
-  }finally{HS_EXAMPLE_PENDING.delete(w.word);}
-}
-function attachHighSchoolExampleObserver(){
-  const cards=[...document.querySelectorAll("#highSchoolList .hs-word-card, #wordList .hs-word-card")];if(!cards.length)return;
-  if("IntersectionObserver" in window){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){const word=e.target.getAttribute("data-hs-card");const w=WORDS.find(x=>x.word===word);if(w)fetchHighSchoolExample(w);io.unobserve(e.target);}}),{rootMargin:"500px"});cards.forEach(c=>io.observe(c));}
-  else cards.slice(0,60).forEach(c=>{const w=WORDS.find(x=>x.word===c.getAttribute("data-hs-card"));if(w)fetchHighSchoolExample(w);});
-}
-
-/* 【JS：高中 7000 專屬頁面】
-   getHighSchoolWords = 篩出高中單字。
-   renderHighSchool = 搜尋／顯示高中單字。 */
-/* ---------------- Rendering: High School 7000 ---------------- */
-function getHighSchoolWords(){
-  return WORDS.filter(w => w && w.category === "High School 7000");
-}
-// 【功能：高中 7000 搜尋／顯示】
-function renderHighSchool(query=""){
-  const el=document.getElementById("highSchoolList");
-  if(!el) return;
-  const st=document.getElementById("highSchoolStatus");
-  const chip=document.getElementById("highSchoolLoadedCount");
-  const q=String(query||"").trim().toLowerCase();
-  const all=getHighSchoolWords();
-  let list=all;
-  if(q) list=list.filter(w=>[w.word,w.pos,w.zh].join(" ").toLowerCase().includes(q));
-  if(chip) chip.textContent=all.length;
-  if(st) st.textContent = q ? `搜尋「${q}」：${list.length} 個結果` : `目前已載入 ${all.length} 個高中單字`;
-  if(!list.length){
-    el.innerHTML='<div class="empty">高中詞庫尚未載入，或找不到符合的單字。請確認網路連線後重新整理頁面。</div>';
-    return;
-  }
-  el.innerHTML=list.slice(0,300).map(w=>cardHTML(w,false)).join("");
-  attachHighSchoolExampleObserver();
-  if(list.length>300){
-    el.insertAdjacentHTML("beforeend", `<div class="sec-sub" style="margin:12px 0 0">目前顯示前 300 筆，請縮小搜尋範圍以查看更精準結果（共 ${list.length} 筆符合）。</div>`);
-  }
-}
-function renderHighSchoolRandom(){
-  const pool=shuffle(getHighSchoolWords()).slice(0,20);
-  const el=document.getElementById("highSchoolList");
-  const st=document.getElementById("highSchoolStatus");
-  if(!el) return;
-  if(!pool.length){
-    if(st) st.textContent="高中詞庫尚未載入。";
-    el.innerHTML='<div class="empty">高中詞庫尚未載入。</div>';
-    return;
-  }
-  if(st) st.textContent=`隨機抽出 ${pool.length} 個高中單字`;
-  el.innerHTML=pool.map(w=>cardHTML(w,false)).join("");
-  attachHighSchoolExampleObserver();
-}
-
-/* 【JS：TOEIC 詞庫畫面】 */
 /* ---------------- Rendering: TOEIC ---------------- */
 const TOEIC_CATEGORIES = [...new Set(WORDS.filter(w=>w.category==="TOEIC Core").map(w=>w.category))];
 let activeToeicCat="全部";
@@ -2769,7 +2535,6 @@ function renderToeicCats(){
   const labels=["全部"];
   document.getElementById("toeicCats").innerHTML=labels.map(c=>`<button class="cat${activeToeicCat===c?" active":""}" data-toeic-cat="${esc(c)}">${c}（${WORDS.filter(w=>w.category==="TOEIC Core").length}）</button>`).join("");
 }
-// 【功能：搜尋／顯示 TOEIC 單字】
 function renderToeic(q=""){
   const needle=String(q||"").trim().toLowerCase();
   let list=WORDS.filter(w=>w.category==="TOEIC Core");
@@ -2781,200 +2546,141 @@ function renderToeic(q=""){
 }
 
 
-/* 【JS：學習中心／測驗統計／錯題本】
-   這一大區是整個「智慧學習」的核心：
-   - quiz stats = 測驗統計
-   - wrong book = 錯題紀錄
-   - priority = 錯題優先級
-   - learning center = 首頁／學習中心統計 */
 /* ============ Learning center JS ============ */
 function loadQuizStats(){
-  try{return JSON.parse(localStorage.getItem("cs-vocab-quiz-stats-v4")||"{}")||{};}catch(_){return {};}
+  try{return JSON.parse(localStorage.getItem("cs-vocab-quiz-stats-v3")||"{}")||{};}catch(_){return {};}
 }
 let quizStats=loadQuizStats();
-function saveQuizStats(){localStorage.setItem("cs-vocab-quiz-stats-v4",JSON.stringify(quizStats));}
-function qsToday(){const k=todayKey();if(!quizStats[k])quizStats[k]={vocab:0,grammar:0,toeic:0,total:0,correct:0,byMode:{}};return quizStats[k];}
-// 【功能：讀取錯題本資料】
-function wrongMap(){try{return JSON.parse(localStorage.getItem("cs-vocab-wrong-book-v3")||"{}")||{};}catch(_){return {};}}
-function saveWrongMap(x){localStorage.setItem("cs-vocab-wrong-book-v3",JSON.stringify(x));}
-// 【功能：答錯時把題目加入錯題本】會增加錯誤次數並記錄時間。
-function addWrong(kind,key,detail,mode){
+function saveQuizStats(){localStorage.setItem("cs-vocab-quiz-stats-v3",JSON.stringify(quizStats));}
+function qsToday(){
+  const k=todayKey();
+  if(!quizStats[k])quizStats[k]={vocab:0,grammar:0,toeic:0,total:0,correct:0};
+  return quizStats[k];
+}
+function wrongMap(){
+  try{return JSON.parse(localStorage.getItem("cs-vocab-wrong-book-v2")||"{}")||{};}catch(_){return {};}
+}
+function saveWrongMap(x){localStorage.setItem("cs-vocab-wrong-book-v2",JSON.stringify(x));}
+function addWrong(kind,key,detail){
   const x=wrongMap(), id=kind+"::"+key;
-  const now=new Date().toISOString();
-  x[id]=x[id]||{kind,key,wrong:0,correct:0,streak:0,lastWrong:null,lastCorrect:null,createdAt:now,detail:detail||""};
-  x[id].wrong++; x[id].streak=0; x[id].lastWrong=now; x[id].lastDate=todayKey(); x[id].detail=detail||x[id].detail||""; x[id].lastMode=mode||"";
+  x[id]=x[id]||{kind,key,wrong:0,correct:0,lastDate:null,detail:detail||""};
+  x[id].wrong++;
+  x[id].lastDate=todayKey();
   saveWrongMap(x);
 }
-// 【功能：答對時更新錯題的連續答對次數】
 function addCorrectToWrong(kind,key){
   const x=wrongMap(), id=kind+"::"+key;
-  if(x[id]){x[id].correct++;x[id].streak=(x[id].streak||0)+1;x[id].lastCorrect=new Date().toISOString();}
+  if(x[id]){x[id].correct++; if(x[id].correct>=2)delete x[id];}
   saveWrongMap(x);
 }
-function recordQuizStat(type,correct,key,detail,mode){
+function recordQuizStat(type,correct,key,detail){
   const d=qsToday(); d[type]=(d[type]||0)+1; d.total=(d.total||0)+1; if(correct)d.correct=(d.correct||0)+1;
-  d.byMode=d.byMode||{}; d.byMode[mode]=d.byMode[mode]||{total:0,correct:0}; d.byMode[mode].total++; if(correct)d.byMode[mode].correct++;
-  saveQuizStats(); if(correct)addCorrectToWrong(type,key);else addWrong(type,key,detail,mode);
+  saveQuizStats();
+  if(correct)addCorrectToWrong(type,key); else addWrong(type,key,detail);
 }
-// 【功能：計算錯題優先級】分數越高代表越值得優先複習。
-function wrongPriority(x){
-  const age=x.lastWrong?Math.max(0,(Date.now()-new Date(x.lastWrong).getTime())/86400000):99;
-  const streak=x.streak||0, errors=x.wrong||0;
-  return errors*4 + (streak<3?Math.max(0,5-age)*2:0) + (age<1?3:age<3?2:age<7?1:0) - streak*1.2;
-}
-function allWrongList(){return Object.values(wrongMap()).filter(x=>(x.wrong||0)>0).sort((a,b)=>wrongPriority(b)-wrongPriority(a));}
-function wrongLevel(x){
-  if((x.streak||0)>=3 && (x.lastCorrect && (!x.lastWrong || new Date(x.lastCorrect)>new Date(x.lastWrong)))) return ["corrected","🟢 已訂正"];
-  if((x.wrong||0)>=3) return ["hot","🔴 很常錯"];
-  return ["recent","🟠 最近錯過"];
-}
-function formatAgo(iso){if(!iso)return "—";const d=Math.max(0,Date.now()-new Date(iso).getTime());const m=Math.floor(d/60000);if(m<60)return m+" 分鐘前";const h=Math.floor(m/60);if(h<24)return h+" 小時前";return Math.floor(h/24)+" 天前";}
-function renderQuizStats(){
-  const d=qsToday(), acc=d.total?Math.round((d.correct||0)/d.total*100):0;
-  const rows=`<div class="quiz-mini"><div class="k">今日題數</div><div class="v">${d.total||0}</div></div><div class="quiz-mini"><div class="k">今日正確率</div><div class="v">${acc}%</div></div><div class="quiz-mini"><div class="k">待複習</div><div class="v">${allWrongList().length}</div></div>`;
-  const v=document.getElementById("vqStats"),g=document.getElementById("gqStats");if(v)v.innerHTML=rows;if(g)g.innerHTML=rows;
-}
+function allWrongList(){return Object.values(wrongMap()).sort((a,b)=>(b.wrong||0)-(a.wrong||0));}
+
 function renderLearningCenter(){
   const d=qsToday(), wrong=allWrongList();
   document.getElementById("lcToday").textContent=todayRecord().count;
   document.getElementById("lcQuizToday").textContent=d.total||0;
   document.getElementById("lcAccuracy").textContent=(d.total?Math.round((d.correct||0)/d.total*100):0)+"%";
   document.getElementById("lcWrong").textContent=wrong.length;
-  const setBar=(id,txt,done,goal)=>{const pct=Math.min(100,Math.round(done/goal*100));document.getElementById(id).style.width=pct+"%";document.getElementById(txt).textContent=Math.min(done,goal)+"/"+goal;};
-  setBar("taskWordsBar","taskWordsTxt",todayRecord().count,state.settings.goal||15); setBar("taskGrammarBar","taskGrammarTxt",d.grammar||0,5); setBar("taskToeicBar","taskToeicTxt",d.toeic||0,5);
-  const box=document.getElementById("weakAnalysisBox"); if(!wrong.length){box.innerHTML='<div class="empty">目前沒有錯題。開始測驗後會自動建立智慧複習清單。</div>';return;}
-  box.innerHTML=wrong.slice(0,8).map(x=>{let title=x.key,zh="";if(x.kind==="vocab"){const w=lookupLocal(x.key);if(w){title=w.word;zh=w.zh||"";}}const lv=wrongLevel(x);return `<div class="wrong-row"><div class="main"><div class="word">${esc(title)}</div><div class="meta">${x.kind==="vocab"?"單字":"文法"} · 錯 ${x.wrong} 次 · 連續答對 ${x.streak||0} 次 · ${formatAgo(x.lastWrong)} ${zh?"· "+esc(zh):""}</div></div><span class="wrong-level ${lv[0]}">${lv[1]}</span></div>`;}).join("");
+  const setBar=(id,txt,done,goal)=>{
+    const pct=Math.min(100,Math.round(done/goal*100));
+    document.getElementById(id).style.width=pct+"%";
+    document.getElementById(txt).textContent=Math.min(done,goal)+"/"+goal;
+  };
+  setBar("taskWordsBar","taskWordsTxt",todayRecord().count,state.settings.goal||15);
+  setBar("taskGrammarBar","taskGrammarTxt",d.grammar||0,5);
+  setBar("taskToeicBar","taskToeicTxt",d.toeic||0,5);
+  const box=document.getElementById("weakAnalysisBox");
+  if(!wrong.length){box.innerHTML='<div class="empty">目前沒有錯題。開始測驗後會自動累積。</div>';return;}
+  box.innerHTML=wrong.slice(0,8).map(x=>{
+    let title=x.key, zh="";
+    if(x.kind==="vocab"){const w=lookupLocal(x.key); if(w){title=w.word;zh=w.zh||"";}}
+    return `<div class="wrong-row"><div class="main"><div class="word">${esc(title)}</div><div class="meta">${x.kind==="vocab"?"單字":"文法"} · 錯 ${x.wrong} 次 ${zh?"· "+esc(zh):""}</div></div></div>`;
+  }).join("");
 }
 
-const VQ_MODES={
-  "mc-en-zh":{label:"英文 → 中文",type:"mc",question:"en",answer:"zh"},
-  "mc-zh-en":{label:"中文 → 英文",type:"mc",question:"zh",answer:"word"},
-  "cloze-mc":{label:"例句填空",type:"cloze"},
-  "spelling":{label:"拼字測驗",type:"spelling"},
-  "listening":{label:"聽力測驗",type:"listening"},
-  "exam":{label:"考試模式",type:"exam"}
-};
-let vocabQuiz={item:null,options:[],answered:false,mode:"mc-en-zh",exam:null};
-function vocabPool(){return WORDS.filter(w=>w&&w.zh&&typeof w.word==="string"&&/^[A-Za-z][A-Za-z' -]*$/.test(w.word.trim())&&!w.word.includes("|"));}
-function normalizeExampleText(s){return String(s||"").replace(/\s+/g," ").trim();}
-function isGoodQuizSentence(w){
-  const ex=normalizeExampleText(w&&w.example);
-  if(!ex || ex.length<15 || ex.length>220) return false;
-  if(!new RegExp("\\b"+escapeRegExp(String(w.word||""))+"\\b","i").test(ex)) return false;
-  if(/^[A-Za-z][A-Za-z' -]+\s+is\s+(?:a|an|the)\s+(?:definition|term|word)/i.test(ex)) return false;
-  if(/\[.*?\]|<.*?>/.test(ex)) return false;
-  const letters=(ex.match(/[A-Za-z]/g)||[]).length;
-  return letters/Math.max(1,ex.length)>0.65;
-}
-function sentenceVocabPool(){return vocabPool().filter(isGoodQuizSentence);}
-function mcOptions(base){const pool=vocabPool().filter(w=>w.word.toLowerCase()!==base.word.toLowerCase());return shuffle([base,...shuffle(pool).slice(0,3)]);}
-// 【功能：智慧選題】依模式與學習紀錄，提高高風險單字出現機率。
-function chooseSmartVocab(mode){
-  const wrong=allWrongList().filter(x=>x.kind==="vocab");
-  const wrongWords=[]; wrong.forEach(x=>{const w=lookupLocal(x.key);if(w)wrongWords.push(w);});
-  const needSentence=mode==="cloze-mc" || (mode==="exam" && (vocabQuiz.exam?.total||0)%3===2);
-  const source=needSentence?sentenceVocabPool():vocabPool();
-  const sourceSet=new Set(source.map(w=>w.word.toLowerCase()));
-  const usefulWrong=wrongWords.filter(w=>sourceSet.has(w.word.toLowerCase()));
-  const fresh=source.filter(w=>!state.daily[todayKey()]?.words?.includes(w.word));
-  if(usefulWrong.length&&Math.random()<0.78)return shuffle(usefulWrong.slice(0,20))[0];
-  return shuffle(fresh.length?fresh:source)[0];
-}
-function clearVQAnswer(){
-  const fb=document.getElementById("vqFeedback");if(fb){fb.textContent="";fb.className="quiz-feedback";}
-  const row=document.getElementById("vqTypingRow");if(row)row.style.display="none";
-  const input=document.getElementById("vqTyping");if(input){input.value="";input.disabled=false;input.className="answer-input";}
-}
-// 【功能：切換單字測驗模式】例如英文→中文、中文→英文、拼字、聽力、考試。
-function setVQMode(mode){
-  vocabQuiz.mode=mode;
-  document.querySelectorAll("#vqModes .quiz-mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
-  document.getElementById("vqExamConfig").style.display=mode==="exam"?"flex":"none";
-  document.getElementById("vqStartExam").style.display=mode==="exam"?"inline-flex":"none";
-  document.getElementById("vqNext").style.display=mode==="exam"&&vocabQuiz.exam&&!vocabQuiz.exam.started?"none":"inline-flex";
-}
-// 【功能：開始單字正式考試】設定題數、分鐘數並啟動倒數。
-function startVocabExam(count=25,minutes=20){vocabQuiz.exam={count,minutes,total:0,correct:0,started:true,startAt:Date.now(),endAt:Date.now()+minutes*60000};setVQMode("exam");buildVocabQuiz();tickVocabExam();}
-function tickVocabExam(){clearInterval(vocabQuiz.examTimer);if(!vocabQuiz.exam||!vocabQuiz.exam.started)return;vocabQuiz.examTimer=setInterval(()=>{if(!vocabQuiz.exam)return;const left=Math.max(0,vocabQuiz.exam.endAt-Date.now());const el=document.getElementById("vqTimer");if(el)el.textContent="⏱ "+Math.ceil(left/60000)+":"+String(Math.ceil((left/1000)%60)).padStart(2,"0");if(left<=0){clearInterval(vocabQuiz.examTimer);finishVocabExam("時間到");}},500);}
-// 【功能：結束單字考試並顯示成績】
-function finishVocabExam(reason="完成"){if(vocabQuiz.exam)vocabQuiz.exam.started=false;clearInterval(vocabQuiz.examTimer);const e=vocabQuiz.exam||{count:0,total:0,correct:0};const pct=e.total?Math.round(e.correct/e.total*100):0;document.getElementById("vqQuestion").textContent=`${reason}！本次 ${e.total}/${e.count} 題 · ${e.correct} 題答對 · 正確率 ${pct}%`;document.getElementById("vqOptions").innerHTML=`<div class="quiz-review">本次答錯的單字已記入智慧錯題本，下一輪會提高出現機率。</div>`;document.getElementById("vqFeedback").textContent="";document.getElementById("vqProgress").textContent="";document.getElementById("vqTimer").textContent="";renderQuizStats();}
-// 【功能：產生下一題單字題】決定題型、目標單字與四個選項。
+let vocabQuiz={item:null,options:[],answered:false};
 function buildVocabQuiz(){
-  if(vocabQuiz.mode==="exam"&&!vocabQuiz.exam?.started){document.getElementById("vqQuestion").textContent="請先選擇題數／時間，再按「開始考試」。";document.getElementById("vqOptions").innerHTML="";return;}
-  if(vocabQuiz.exam?.started&&vocabQuiz.exam.total>=vocabQuiz.exam.count){finishVocabExam("考試完成");return;}
-  const base=chooseSmartVocab(vocabQuiz.mode);if(!base)return;const opts=mcOptions(base);vocabQuiz={...vocabQuiz,item:base,options:opts,answered:false};clearVQAnswer();
-  const mode=VQ_MODES[vocabQuiz.mode]||VQ_MODES["mc-en-zh"];
-  document.getElementById("vqMeta").textContent=mode.label+" · "+catName(base.category||"General");
-  document.getElementById("vqProgress").textContent=vocabQuiz.exam?.started?`第 ${vocabQuiz.exam.total+1} / ${vocabQuiz.exam.count} 題`:"";
-  document.getElementById("vqTimer").textContent=vocabQuiz.exam?.started?document.getElementById("vqTimer").textContent:"";
-  const typing=document.getElementById("vqTypingRow");
-  if(mode.type==="mc"){
-    document.getElementById("vqQuestion").textContent=mode.question==="en"?base.word:safeFlashcardZh(base);
-    document.getElementById("vqOptions").innerHTML=(mode.answer==="zh"?opts.map((w,i)=>`<button class="quiz-option" data-vq="${i}">${esc(safeFlashcardZh(w))}</button>`):opts.map((w,i)=>`<button class="quiz-option" data-vq="${i}">${esc(w.word)}</button>`)).join("");
-  }else if(mode.type==="cloze"){
-    if(!isGoodQuizSentence(base))return buildVocabQuiz();
-    const re=new RegExp("\\b"+escapeRegExp(base.word)+"\\b","gi");
-    document.getElementById("vqQuestion").textContent=normalizeExampleText(base.example).replace(re,"_____");
-    document.getElementById("vqOptions").innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-vq="${i}">${esc(w.word)}</button>`).join("");
-  }else if(mode.type==="spelling"){
-    document.getElementById("vqQuestion").textContent="請根據中文提示拼出英文單字：\n"+safeFlashcardZh(base);document.getElementById("vqOptions").innerHTML="";typing.style.display="flex";
-  }else if(mode.type==="listening"){
-    document.getElementById("vqQuestion").textContent="請播放英文後選出正確單字";document.getElementById("vqOptions").innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-vq="${i}">${esc(w.word)}</button>`).join("");setTimeout(()=>speak(base.word),120);
-  }else if(mode.type==="exam"){
-    const examIndex=vocabQuiz.exam.total%3;const internal=["mc-zh-en","mc-en-zh","cloze"][examIndex];if(internal==="cloze"&&!isGoodQuizSentence(base))return buildVocabQuiz();
-    document.getElementById("vqMeta").textContent="考試模式 · "+["中文 → 英文","英文 → 中文","例句填空"][examIndex]+" · "+catName(base.category||"General");
-    if(internal==="mc-zh-en")document.getElementById("vqQuestion").textContent=safeFlashcardZh(base);else if(internal==="mc-en-zh")document.getElementById("vqQuestion").textContent=base.word;else document.getElementById("vqQuestion").textContent=normalizeExampleText(base.example).replace(new RegExp("\\b"+escapeRegExp(base.word)+"\\b","gi"),"_____");
-    document.getElementById("vqOptions").innerHTML=(internal==="mc-en-zh"?opts.map((w,i)=>`<button class="quiz-option" data-vq="${i}">${esc(safeFlashcardZh(w))}</button>`):opts.map((w,i)=>`<button class="quiz-option" data-vq="${i}">${esc(w.word)}</button>`)).join("");
-  }
+  const pool=WORDS.filter(w=>w&&w.zh&&typeof w.word==="string"&&/^[A-Za-z]/.test(w.word));
+  if(!pool.length)return;
+  const base=shuffle(pool)[0];
+  const opts=shuffle([base,...shuffle(pool.filter(w=>w.word!==base.word)).slice(0,3)]);
+  vocabQuiz={item:base,options:opts,answered:false};
+  document.getElementById("vqMeta").textContent="中文 → 英文 · "+catName(base.category||"General");
+  document.getElementById("vqQuestion").textContent=base.zh;
+  document.getElementById("vqFeedback").textContent="";
+  document.getElementById("vqFeedback").className="quiz-feedback";
+  document.getElementById("vqOptions").innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-vq="${i}">${esc(w.word)}</button>`).join("");
 }
-// 【功能：判斷單字選擇題答案】
-function answerVocab(i){if(vocabQuiz.answered||!vocabQuiz.item)return;const mode=VQ_MODES[vocabQuiz.mode]||VQ_MODES["mc-en-zh"];const chosen=vocabQuiz.options[i];let ok=false;if(vocabQuiz.mode==="exam"){const internal=["mc-zh-en","mc-en-zh","cloze"][vocabQuiz.exam?.total%3||0];ok=chosen&&chosen.word.toLowerCase()===vocabQuiz.item.word.toLowerCase();}else{ok=(mode.type==="mc"||mode.type==="cloze"||mode.type==="listening")&&chosen&&chosen.word.toLowerCase()===vocabQuiz.item.word.toLowerCase();}vocabQuiz.answered=true;document.querySelectorAll("#vqOptions .quiz-option").forEach((b,j)=>{b.disabled=true;if(vocabQuiz.options[j].word===vocabQuiz.item.word)b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong")});const fb=document.getElementById("vqFeedback");fb.className="quiz-feedback "+(ok?"ok":"err");fb.textContent=ok?"答對了！":"正確答案："+vocabQuiz.item.word;recordQuizStat("vocab",ok,vocabQuiz.item.word,vocabQuiz.item.zh,vocabQuiz.mode);if(ok)recordStudy(vocabQuiz.item.word);else setProficiency(vocabQuiz.item.word,"review");if(vocabQuiz.exam?.started){vocabQuiz.exam.total++;if(ok)vocabQuiz.exam.correct++;if(vocabQuiz.exam.total>=vocabQuiz.exam.count){finishVocabExam("考試完成");return;}}renderLearningCenter();renderQuizStats();}
-
-// 【功能：判斷拼字輸入題答案】
-function answerVocabTyping(){
-  if(vocabQuiz.answered||!vocabQuiz.item)return;const ans=document.getElementById("vqTyping").value.trim().toLowerCase();const ok=ans===vocabQuiz.item.word.toLowerCase();vocabQuiz.answered=true;const inp=document.getElementById("vqTyping");inp.className="answer-input "+(ok?"ok":"err");inp.disabled=true;const fb=document.getElementById("vqFeedback");fb.className="quiz-feedback "+(ok?"ok":"err");fb.textContent=ok?"答對了！":"正確答案："+vocabQuiz.item.word;recordQuizStat("vocab",ok,vocabQuiz.item.word,vocabQuiz.item.zh,"spelling");if(ok)recordStudy(vocabQuiz.item.word);else setProficiency(vocabQuiz.item.word,"review");renderLearningCenter();renderQuizStats();
+function answerVocab(i){
+  if(vocabQuiz.answered)return;
+  const ok=vocabQuiz.options[i].word===vocabQuiz.item.word; vocabQuiz.answered=true;
+  document.querySelectorAll("#vqOptions .quiz-option").forEach((b,j)=>{
+    b.disabled=true;
+    if(vocabQuiz.options[j].word===vocabQuiz.item.word)b.classList.add("correct");
+    if(j===i&&!ok)b.classList.add("wrong");
+  });
+  const fb=document.getElementById("vqFeedback");fb.className="quiz-feedback "+(ok?"ok":"err");
+  fb.textContent=ok?"答對了！":"正確答案："+vocabQuiz.item.word;
+  recordQuizStat("vocab",ok,vocabQuiz.item.word,vocabQuiz.item.zh);
+  if(!ok)setProficiency(vocabQuiz.item.word,"review");
+  renderLearningCenter();
 }
 
-const GRAMMAR_QUESTIONS=[
- {q:"If I _____ enough money, I would buy a new laptop.",o:["have","had","will have","have had"],a:1,t:"假設語氣"},
- {q:"She _____ here since 2022.",o:["works","worked","has worked","is working"],a:2,t:"現在完成式"},
- {q:"The report _____ by the manager yesterday.",o:["approved","was approved","is approving","has approve"],a:1,t:"被動語態"},
- {q:"The student _____ won the prize is my friend.",o:["which","whose","who","where"],a:2,t:"關係代名詞"},
- {q:"I don't know _____ he will come tonight.",o:["whether","what","which","whose"],a:0,t:"名詞子句"},
- {q:"By the time we arrived, the movie _____.",o:["starts","started","had started","has started"],a:2,t:"過去完成式"},
- {q:"He is _____ than his brother.",o:["tall","taller","tallest","more tall"],a:1,t:"比較級"},
- {q:"Not until midnight _____ the work completed.",o:["they finished","did they finish","they had finished","have they finished"],a:1,t:"倒裝"},
- {q:"The man _____ car was stolen called the police.",o:["who","whose","which","whom"],a:1,t:"關係代名詞"},
- {q:"I wish I _____ more time yesterday.",o:["have","had","had had","will have"],a:2,t:"假設語氣"},
- {q:"Having _____ the report, she left the office.",o:["finish","finished","finishing","finishes"],a:1,t:"分詞構句"},
- {q:"It was John _____ broke the window.",o:["which","who","whose","where"],a:1,t:"強調句"},
- {q:"The book _____ on the desk belongs to me.",o:["lying","lies","lay","is lie"],a:0,t:"分詞構句"},
- {q:"Whether he agrees _____ not, we will proceed.",o:["and","or","but","nor"],a:1,t:"連接詞"},
- {q:"The project is expected _____ next month.",o:["finish","to finish","finishing","finished"],a:1,t:"不定詞"}
-];
-let grammarQuiz={item:null,answered:false,index:0,mode:"mc",exam:null};
-// 【功能：產生真正的文法四選一題】
+let grammarQuiz={item:null,options:[],answered:false};
+function grammarBank(){
+  const a=[];
+  // GRAMMAR / SENIOR_GRAMMAR are declared as top-level const arrays,
+  // so they are not guaranteed to be properties of window.
+  if(typeof GRAMMAR !== "undefined" && Array.isArray(GRAMMAR)) a.push(...GRAMMAR);
+  if(typeof SENIOR_GRAMMAR !== "undefined" && Array.isArray(SENIOR_GRAMMAR)) a.push(...SENIOR_GRAMMAR);
+  if(typeof JUNIOR_GRAMMAR !== "undefined" && Array.isArray(JUNIOR_GRAMMAR)) a.push(...JUNIOR_GRAMMAR);
+  return a.filter(x=>x && (x.title || x.name));
+}
+function grammarLabel(x){return x.title||x.name||"";}
 function buildGrammarQuiz(){
-  if(grammarQuiz.mode==="exam"&&!grammarQuiz.exam?.started){document.getElementById("gqQuestion").textContent="按『大考／會考模式』後會自動開始 25 題測驗。";return;}
-  const base=shuffle(GRAMMAR_QUESTIONS)[0];grammarQuiz.item=base;grammarQuiz.answered=false;
-  document.getElementById("gqMeta").textContent=(grammarQuiz.mode==="exam"?"考試模式 · ":"")+base.t;document.getElementById("gqProgress").textContent=grammarQuiz.exam?.started?`第 ${grammarQuiz.exam.total+1} / ${grammarQuiz.exam.count} 題`:"";document.getElementById("gqTimer").textContent=grammarQuiz.exam?.started?document.getElementById("gqTimer").textContent:"";document.getElementById("gqQuestion").textContent=base.q;document.getElementById("gqFeedback").textContent="";document.getElementById("gqFeedback").className="quiz-feedback";document.getElementById("gqOptions").innerHTML=base.o.map((x,i)=>`<button class="quiz-option" data-gq="${i}">${esc(x)}</button>`).join("");
+  const pool=grammarBank();
+  if(!pool.length){
+    document.getElementById("gqQuestion").textContent="文法題庫尚未載入，請先重新整理頁面。";
+    document.getElementById("gqFeedback").textContent="若重新整理後仍出現這個訊息，請使用本修正版檔案。";
+    document.getElementById("gqFeedback").className="quiz-feedback err";
+    return;
+  }
+  const base=shuffle(pool)[0];
+  const opts=shuffle([base,...shuffle(pool.filter(x=>grammarLabel(x)!==grammarLabel(base))).slice(0,3)]);
+  grammarQuiz={item:base,options:opts,answered:false};
+  const desc=base.rule || base.explanation || base.desc || base.description || "";
+  document.getElementById("gqQuestion").textContent=grammarLabel(base)+(desc ? "\n"+desc : "\n請選出最符合的文法主題。");
+  document.getElementById("gqFeedback").textContent="";
+  document.getElementById("gqFeedback").className="quiz-feedback";
+  document.getElementById("gqOptions").innerHTML=opts.map((x,i)=>`<button class="quiz-option" data-gq="${i}">${esc(grammarLabel(x))}</button>`).join("");
 }
-function startGrammarExam(){grammarQuiz.mode="exam";document.querySelectorAll("#gqModes .quiz-mode").forEach(b=>b.classList.toggle("active",b.dataset.gmode==="exam"));grammarQuiz.exam={count:25,total:0,correct:0,started:true,endAt:Date.now()+20*60000};clearInterval(grammarQuiz.timer);grammarQuiz.timer=setInterval(()=>{const left=Math.max(0,grammarQuiz.exam.endAt-Date.now());document.getElementById("gqTimer").textContent="⏱ "+Math.ceil(left/1000/60)+":"+String(Math.ceil((left/1000)%60)).padStart(2,"0");if(left<=0){clearInterval(grammarQuiz.timer);finishGrammarExam("時間到");}},500);buildGrammarQuiz();}
-function finishGrammarExam(reason){if(grammarQuiz.exam)grammarQuiz.exam.started=false;clearInterval(grammarQuiz.timer);const e=grammarQuiz.exam||{total:0,count:25,correct:0};const pct=e.total?Math.round(e.correct/e.total*100):0;document.getElementById("gqQuestion").textContent=`${reason}！本次 ${e.total}/${e.count} 題 · ${e.correct} 題答對 · 正確率 ${pct}%`;document.getElementById("gqOptions").innerHTML=`<div class="quiz-review">系統已把答錯題目放進智慧錯題本。</div>`;document.getElementById("gqTimer").textContent="";renderQuizStats();}
-// 【功能：判斷文法四選一答案】
-function answerGrammar(i){if(grammarQuiz.answered||!grammarQuiz.item)return;const ok=i===grammarQuiz.item.a;grammarQuiz.answered=true;document.querySelectorAll("#gqOptions .quiz-option").forEach((b,j)=>{b.disabled=true;if(j===grammarQuiz.item.a)b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong")});const fb=document.getElementById("gqFeedback");fb.className="quiz-feedback "+(ok?"ok":"err");fb.textContent=ok?"答對了！":"正確答案："+grammarQuiz.item.o[grammarQuiz.item.a];recordQuizStat("grammar",ok,grammarQuiz.item.t,grammarQuiz.item.q,"grammar-mc");if(grammarQuiz.exam?.started){grammarQuiz.exam.total++;if(ok)grammarQuiz.exam.correct++;if(grammarQuiz.exam.total>=grammarQuiz.exam.count){finishGrammarExam("考試完成");return;}}renderLearningCenter();renderQuizStats();}
-// 【功能：顯示智慧錯題本】把錯題依優先度分類顯示。
-function renderWrongBook(q=""){
-  const n=String(q||"").toLowerCase().trim();let list=allWrongList();if(n)list=list.filter(x=>String(x.key).toLowerCase().includes(n)||String(x.detail||"").toLowerCase().includes(n));
-  const el=document.getElementById("wrongBookList");if(!list.length){el.innerHTML='<div class="empty">目前沒有符合條件的錯題。</div>';return;}
-  el.innerHTML=list.map(x=>{const w=x.kind==="vocab"?lookupLocal(x.key):null;const lv=wrongLevel(x);return `<div class="wrong-row"><div class="main"><div class="word">${esc(w?w.word:x.key)}</div><div class="meta">${x.kind==="vocab"?"單字":"文法"} · 錯 ${x.wrong} 次 · 最後錯誤 ${formatAgo(x.lastWrong)} · 連續答對 ${x.streak||0} 次 · ${x.detail?esc(x.detail):""}</div><div class="wrong-actions"><button class="btn btn-sm" data-wrong-review="${esc(x.key)}" data-wrong-kind="${esc(x.kind)}">立即複習</button></div></div><span class="wrong-level ${lv[0]}">${lv[1]}</span></div>`;}).join("");
+function answerGrammar(i){
+  if(grammarQuiz.answered)return;
+  const ok=grammarLabel(grammarQuiz.options[i])===grammarLabel(grammarQuiz.item);grammarQuiz.answered=true;
+  document.querySelectorAll("#gqOptions .quiz-option").forEach((b,j)=>{
+    b.disabled=true;if(grammarLabel(grammarQuiz.options[j])===grammarLabel(grammarQuiz.item))b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong");
+  });
+  const fb=document.getElementById("gqFeedback");fb.className="quiz-feedback "+(ok?"ok":"err");fb.textContent=ok?"答對了！":"正確主題："+grammarLabel(grammarQuiz.item);
+  recordQuizStat("grammar",ok,grammarLabel(grammarQuiz.item),grammarLabel(grammarQuiz.item));renderLearningCenter();
 }
-function startWrongReview(){const w=allWrongList().find(x=>x.kind==="vocab");if(w){vocabQuiz.mode="mc-zh-en";document.querySelector('.tab[data-view="vocab-quiz"]')?.click();vocabQuiz.item=lookupLocal(w.key)||null;buildVocabQuiz();}else{document.querySelector('.tab[data-view="grammar-quiz"]')?.click();buildGrammarQuiz();}}
 
-/* 【JS：閃卡】
-   fcLoad = 載入牌組。
-   fcShow = 顯示目前卡片。
-   setProficiency = 太簡單／需複習／完全掌握。 */
+function renderWrongBook(q=""){
+  const n=String(q||"").toLowerCase().trim();
+  let list=allWrongList();
+  if(n)list=list.filter(x=>String(x.key).toLowerCase().includes(n)||String(x.detail||"").toLowerCase().includes(n));
+  const el=document.getElementById("wrongBookList");
+  if(!list.length){el.innerHTML='<div class="empty">目前沒有符合條件的錯題。</div>';return;}
+  el.innerHTML=list.map(x=>{
+    const w=x.kind==="vocab"?lookupLocal(x.key):null;
+    return `<div class="wrong-row"><div class="main"><div class="word">${esc(w?w.word:x.key)}</div><div class="meta">${x.kind==="vocab"?"單字":"文法"} · 錯 ${x.wrong} 次 · 最近 ${x.lastDate||"—"}</div></div></div>`;
+  }).join("");
+}
+
 /* ---------------- Rendering: flashcards ---------------- */
 let fcList = [], fcIdx = 0, fcDeck = "all";
 function isValidFlashcardWord(w){
@@ -2999,7 +2705,6 @@ function normalizedFlashcardPool(){
     seen.add(k); return true;
   });
 }
-// 【功能：載入閃卡牌組】all / weak / mastered。
 function fcLoad(deck){
   fcDeck = deck;
   fcList = deck === "weak" ? shuffle(weakWords().map(lookupLocal).filter(isValidFlashcardWord))
@@ -3009,7 +2714,6 @@ function fcLoad(deck){
   fcIdx = 0;
   fcShow();
 }
-// 【功能：把目前閃卡資料畫到畫面】
 function fcShow(){
   const w = fcList[fcIdx];
   document.getElementById("flipCard").classList.remove("flipped");
@@ -3029,7 +2733,6 @@ function fcShow(){
     b.classList.toggle("on", state.proficiency[w.word] === v);
   });
 }
-// 【功能：手動設定單字熟練度】too-easy / review / mastered。
 function setProficiency(word, v){
   state.proficiency[word] = v;
   persist();
@@ -3047,8 +2750,6 @@ function removeWeak(word){
   toast("已從難詞收藏本移除", "ok");
 }
 
-/* 【JS：Header 與設定】
-   這裡負責主題、每日目標、語速等設定。 */
 /* ---------------- Rendering: header & settings ---------------- */
 function renderHeader(){
   document.getElementById("chipStreakV").textContent = state.streak.count;
@@ -3066,8 +2767,6 @@ function toggleTheme(){
   persist(); renderSettings();
 }
 
-/* 【JS：Toast 小提示】
-   toast("訊息") 會在畫面下方顯示短暫提醒。 */
 /* ---------------- Toast ---------------- */
 let toastTimer = null;
 function toast(msg, type){
@@ -3078,12 +2777,7 @@ function toast(msg, type){
   toastTimer = setTimeout(() => t.className = "", 2600);
 }
 
-/* 【JS：資料匯出／匯入／重設】
-   exportProgress = 下載 JSON 備份。
-   importProgress = 讀回備份。
-   resetProgress = 清掉學習紀錄。 */
 /* ---------------- Export / Import / Reset ---------------- */
-// 【功能：匯出學習紀錄 JSON】
 function exportProgress(){
   const data = { app: "CS Vocab Trainer", exportedAt: new Date().toISOString(), ...state };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -3094,7 +2788,6 @@ function exportProgress(){
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   toast("進度已匯出為 JSON 檔案", "ok");
 }
-// 【功能：匯入學習紀錄 JSON】
 function importProgress(file){
   const r = new FileReader();
   r.onload = () => {
@@ -3114,7 +2807,6 @@ function importProgress(file){
   };
   r.readAsText(file);
 }
-// 【功能：重設所有學習進度】這是破壞性操作。
 function resetProgress(){
   if(!confirm("確定要重設所有學習進度嗎？此操作無法復原。")) return;
   state.settings = { rate: 1.0, theme: state.settings.theme, goal: 15 };
@@ -3123,15 +2815,9 @@ function resetProgress(){
   persist(); refreshAll();
   toast("已重設所有進度", "ok");
 }
-// 【功能：所有主要畫面重新整理一次】
 function refreshAll(){ renderHeader(); renderDashboard(); renderCats(); renderLibrary(); renderSettings(); fcLoad(fcDeck); }
 
-/* 【JS：所有按鈕事件】
-   init() 是整個網站啟動入口。
-   大部分 button / input 的 click、keydown、change 都在這裡綁定。
-   想知道「按下某按鈕後到底做了什麼」，從這裡往下找最容易。 */
 /* ---------------- Event wiring ---------------- */
-// 【功能：網站啟動入口】DOMContentLoaded 後從這裡開始。
 function init(){
   // 清除舊版可能含亂碼的閃卡快取版本。
   try{
@@ -3146,7 +2832,6 @@ function init(){
     document.getElementById("view-" + t.dataset.view).classList.add("active");
     if(t.dataset.view === "dashboard") renderDashboard();
     if(t.dataset.view === "library") renderLibrary();
-    if(t.dataset.view === "high-school") renderHighSchool(document.getElementById("highSchoolSearch")?.value || "");
     if(t.dataset.view === "practice"){ if(!clozeWord) clozePick(); }
     if(t.dataset.view === "senior-grammar"){ renderSeniorGrammar(sgSearch.value); }
     if(t.dataset.view === "toeic"){ renderToeic(document.getElementById("toeicSearch").value); }
@@ -3286,13 +2971,6 @@ function init(){
   search.addEventListener("keydown", e => { if(e.key === "Enter") doSearch(); });
   document.getElementById("dailyBtn").addEventListener("click", renderDailyWords);
 
-  // Dedicated High School 7000 view
-  const hsSearch = document.getElementById("highSchoolSearch");
-  document.getElementById("highSchoolSearchBtn").addEventListener("click", () => renderHighSchool(hsSearch.value));
-  document.getElementById("highSchoolAllBtn").addEventListener("click", () => { hsSearch.value=""; renderHighSchool(); });
-  document.getElementById("highSchoolRandomBtn").addEventListener("click", renderHighSchoolRandom);
-  hsSearch.addEventListener("keydown", e => { if(e.key === "Enter") renderHighSchool(hsSearch.value); });
-
   // Category filter
   document.getElementById("catsBox").addEventListener("click", e => {
     const c = e.target.closest(".cat"); if(!c) return;
@@ -3353,38 +3031,23 @@ function init(){
 
 
   if(document.getElementById("vqNext")){
-    document.querySelectorAll("#vqModes .quiz-mode").forEach(b=>b.addEventListener("click",()=>{setVQMode(b.dataset.mode); if(b.dataset.mode!=="exam") buildVocabQuiz(); else buildVocabQuiz();}));
-    document.querySelectorAll("#vqExamCountSeg button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("#vqExamCountSeg button").forEach(x=>x.classList.remove("active"));b.classList.add("active");}));
-    document.querySelectorAll("#vqExamTimeSeg button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("#vqExamTimeSeg button").forEach(x=>x.classList.remove("active"));b.classList.add("active");}));
-    document.getElementById("vqStartExam").addEventListener("click",()=>{const c=Number(document.querySelector("#vqExamCountSeg button.active")?.dataset.count||25),m=Number(document.querySelector("#vqExamTimeSeg button.active")?.dataset.min||20);startVocabExam(c,m);});
     document.getElementById("vqNext").addEventListener("click",buildVocabQuiz);
-    document.getElementById("vqSpeak").addEventListener("click",()=>{if(vocabQuiz.item){ if(vocabQuiz.mode==="listening") speak(vocabQuiz.item.word); else speak(vocabQuiz.item.word); }});
+    document.getElementById("vqSpeak").addEventListener("click",()=>{if(vocabQuiz.item)speak(vocabQuiz.item.word);});
     document.getElementById("vqOptions").addEventListener("click",e=>{const b=e.target.closest("[data-vq]");if(b)answerVocab(Number(b.dataset.vq));});
-    document.getElementById("vqSubmitTyping").addEventListener("click",answerVocabTyping);
-    document.getElementById("vqTyping").addEventListener("keydown",e=>{if(e.key==="Enter")answerVocabTyping();});
-    document.querySelectorAll("#gqModes .quiz-mode").forEach(b=>b.addEventListener("click",()=>{grammarQuiz.mode=b.dataset.gmode;if(grammarQuiz.mode==="exam")startGrammarExam();else buildGrammarQuiz();}));
     document.getElementById("gqNext").addEventListener("click",buildGrammarQuiz);
     document.getElementById("gqOptions").addEventListener("click",e=>{const b=e.target.closest("[data-gq]");if(b)answerGrammar(Number(b.dataset.gq));});
     document.getElementById("wrongSearch").addEventListener("input",e=>renderWrongBook(e.target.value));
-    document.getElementById("wrongQuizBtn").addEventListener("click",()=>startWrongReview());
-    document.getElementById("wrongBookList").addEventListener("click",e=>{const b=e.target.closest("[data-wrong-review]");if(!b)return;const key=b.dataset.wrongReview;if(b.dataset.wrongKind==="vocab"){vocabQuiz.mode="mc-zh-en";document.querySelector('.tab[data-view="vocab-quiz"]')?.click();buildVocabQuiz();}else{grammarQuiz.mode="mc";document.querySelector('.tab[data-view="grammar-quiz"]')?.click();buildGrammarQuiz();}});
+    document.getElementById("wrongQuizBtn").addEventListener("click",()=>{document.querySelector('.tab[data-view="vocab-quiz"]')?.click();buildVocabQuiz();});
   }
 
   refreshAll();
   renderHeader();
-  renderHighSchool();
-  setVQMode("mc-en-zh");
-  buildVocabQuiz();
-  buildGrammarQuiz();
-  renderWrongBook();
-  renderQuizStats();
 
   // Load the High School 7000 bank after the initial UI is ready.
   loadHighSchool7000().then(n => {
     if(n > 0){
       renderCats();
       renderLibrary();
-      renderHighSchool(document.getElementById("highSchoolSearch")?.value || "");
       renderToeicCats();
       renderToeic();
       // Important: refresh the ALL flashcard deck after the async
@@ -3404,19 +3067,324 @@ function init(){
 
 document.addEventListener("DOMContentLoaded", init);
 
-/* ================================================================
-   【快速修改索引】
-   ① 外觀：往上找 <style> → Design Tokens / Word list / Quiz
-   ② 單字：往下找 WORDS
-   ③ 高中7000：找 HIGH_SCHOOL_7000_URL / loadHighSchool7000
-   ④ 例句卡片：找 cardHTML
-   ⑤ 例句朗讀：搜尋 data-speak / example-speak / speak(text)
-   ⑥ 單字測驗：搜尋 VQ_MODES / buildVocabQuiz / answerVocab
-   ⑦ 文法測驗：搜尋 buildGrammarQuiz / answerGrammar
-   ⑧ 錯題本：搜尋 addWrong / addCorrectToWrong / wrongPriority / renderWrongBook
-   ⑨ 每日進度：搜尋 todayRecord / recordStudy / touchStreak
-   ⑩ 所有按鈕：搜尋 function init
-   ================================================================ */
+/* ============ Full Feature Pack v6 ============ */
+const F2_GRAMMAR_Q = [
+ {q:"If I ___ you, I would apologize.",o:["am","were","was","be"],a:1,e:"第二類假設語氣：If + 過去式；正式英文常用 were。"},
+ {q:"By next year, she ___ here for ten years.",o:["works","worked","will have worked","has worked"],a:2,e:"未來完成式：will have + p.p.。"},
+ {q:"The report ___ before the meeting started.",o:["has finished","had been finished","is finishing","will finish"],a:1,e:"過去完成被動：had been + p.p.。"},
+ {q:"I will call you as soon as I ___.",o:["arrive","will arrive","arrived","am arriving"],a:0,e:"時間副詞子句談未來時通常用現在式。"},
+ {q:"The man ___ car was stolen called the police.",o:["who","whose","which","whom"],a:1,e:"whose 後面接名詞，表示所有關係。"},
+ {q:"This is the place ___ we first met.",o:["which","what","where","who"],a:2,e:"where 作關係副詞，修飾地點。"},
+ {q:"He avoided ___ about the problem.",o:["talk","to talk","talking","talked"],a:2,e:"avoid 後接動名詞 V-ing。"},
+ {q:"She seems ___ the answer already.",o:["to know","knowing","know","to have known"],a:3,e:"to have known 表示知道這件事發生在更早之前。"},
+ {q:"It was kind ___ you to help me.",o:["for","of","to","with"],a:1,e:"評價人的行為用 It is + adj. + of + O + to V。"},
+ {q:"He speaks English ___ than his brother.",o:["fluent","more fluently","most fluently","more fluent"],a:1,e:"修飾 speaks 要用副詞比較級。"},
+ {q:"The test was ___ difficult that many students failed.",o:["such","so","too","very"],a:1,e:"so + adj./adv. + that。"},
+ {q:"___ he was tired, he kept working.",o:["Because","Although","Unless","Therefore"],a:1,e:"although 表讓步。"},
+ {q:"You won't pass ___ you study harder.",o:["if","unless","because","while"],a:1,e:"unless = if ... not。"},
+ {q:"Had I known the truth, I ___ differently.",o:["act","will act","would have acted","would act"],a:2,e:"倒裝第三類假設語氣：Had I known = If I had known。"},
+ {q:"Only then ___ why she was upset.",o:["I understood","did I understand","I did understand","understood I"],a:1,e:"Only 放句首強調時常用倒裝：Only then did I understand。"},
+ {q:"Not until midnight ___ home.",o:["he returned","did he return","he did return","returned he"],a:1,e:"Not until 放句首要倒裝。"},
+ {q:"The bridge, ___ in 1900, is still in use.",o:["building","built","was built","which build"],a:1,e:"過去分詞可縮減被動關係子句。"},
+ {q:"I would rather ___ at home tonight.",o:["to stay","staying","stay","stayed"],a:2,e:"would rather + 原形動詞。"},
+ {q:"She suggested that he ___ earlier.",o:["leave","leaves","left","to leave"],a:0,e:"建議類動詞 that 子句可用原形動詞（假設語氣）。"},
+ {q:"The teacher asked me where ___.",o:["did I live","I lived","do I live","I live?"],a:1,e:"間接問句使用陳述句語序。"}
+];
+const F2_REL={
+ economic:{syn:["financial","commercial"],ant:["uneconomic"],coll:["economic growth","economic policy"]},
+ affect:{syn:["influence","impact"],ant:[],coll:["affect performance"]},
+ effect:{syn:["result","impact"],ant:[],coll:["have an effect on"]},
+ obtain:{syn:["get","acquire"],ant:["lose"],coll:["obtain permission"]},
+ acquire:{syn:["obtain","gain"],ant:["lose"],coll:["acquire skills"]},
+ maintain:{syn:["keep","preserve"],ant:["abandon"],coll:["maintain quality"]},
+ abandon:{syn:["give up","leave"],ant:["continue"],coll:["abandon a plan"]},
+ revenue:{syn:["income","earnings"],ant:[],coll:["annual revenue"]},
+ expense:{syn:["cost","expenditure"],ant:[],coll:["operating expenses"]},
+ salary:{syn:["pay","wage"],ant:[],coll:["annual salary"]},
+ advice:{syn:["guidance","recommendation"],ant:[],coll:["give advice"]},
+ advise:{syn:["recommend","counsel"],ant:[],coll:["advise someone to do"]}
+};
+const F2_CONF={
+ "affect/effect":"affect 多作動詞『影響』；effect 多作名詞『效果、影響』。",
+ "economic/economical":"economic = 經濟的；economical = 節省的。",
+ "advice/advise":"advice 是名詞；advise 是動詞。",
+ "accept/except":"accept = 接受；except = 除了。",
+ "principal/principle":"principal = 主要的／校長；principle = 原則。",
+ "raise/rise":"raise 通常及物；rise 通常不及物。",
+ "borrow/lend":"borrow = 借入；lend = 借出。",
+ "lie/lay":"lie = 躺／說謊；lay = 放置，過去式與變化另記。"
+};
+function f2WordMatches(q,mode){
+ const n=String(q||"").trim().toLowerCase(); if(!n)return [];
+ return WORDS.filter(w=>{
+   if(!w||!w.word)return false;
+   const en=String(w.word).toLowerCase(), zh=String(w.zh||"").toLowerCase(), ex=String(w.example||"").toLowerCase();
+   if(mode==="zh")return zh.includes(n);
+   if(mode==="en")return en.includes(n);
+   return en.includes(n)||zh.includes(n)||ex.includes(n);
+ });
+}
+function f2RelationsHtml(w){
+ const key=String(w.word||"").toLowerCase().trim(), r=F2_REL[key]; if(!r)return "";
+ return `<div class="card" style="margin-top:10px"><div class="sec-sub" style="margin:0 0 6px">近義／反義／常見搭配</div><div style="font-size:13px;line-height:1.8"><b>近義：</b>${r.syn.join(" · ")||"—"}<br><b>反義：</b>${r.ant.join(" · ")||"—"}<br><b>搭配：</b>${r.coll.join(" · ")||"—"}</div></div>`;
+}
+function f2RenderRelations(list){
+ const el=document.getElementById("wordList"); if(!el||!list.length)return;
+ const relation=list.map(f2RelationsHtml).filter(Boolean).join(""); if(!relation)return;
+ el.insertAdjacentHTML("beforeend",relation);
+ const pair=Object.keys(F2_CONF).find(k=>k.split("/").includes(String(list[0].word||"").toLowerCase()));
+ if(pair)el.insertAdjacentHTML("beforeend",`<div class="card" style="margin-top:10px"><div class="sec-sub" style="margin:0 0 6px">易混淆提示</div><div style="font-size:13px">${esc(F2_CONF[pair])}</div></div>`);
+}
+function f2DueMeta(){try{return JSON.parse(localStorage.getItem("cs-vocab-srs-v3")||"{}")||{}}catch(_){return {}}}
+function f2SaveDue(x){localStorage.setItem("cs-vocab-srs-v3",JSON.stringify(x))}
+function f2DaysAdd(date,days){const d=new Date(date);d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
+function f2ReviewWord(word,ok){
+ const x=f2DueMeta(), k=String(word).toLowerCase(); const now=todayKey(); const old=x[k]||{box:0,seen:0,correct:0}; old.seen++; if(ok){old.correct++;old.box=Math.min(5,(old.box||0)+1)}else{old.box=0} const iv=[1,3,7,14,30,60][old.box]||1; old.due=f2DaysAdd(now,iv); old.last=now; x[k]=old;f2SaveDue(x);
+}
+function f2DueWords(){const x=f2DueMeta(),now=todayKey();return WORDS.filter(w=>w&&w.word&&x[String(w.word).toLowerCase()]&&x[String(w.word).toLowerCase()].due<=now).sort((a,b)=>(x[a.word.toLowerCase()].box||0)-(x[b.word.toLowerCase()].box||0))}
+function f2NewWords(){const x=f2DueMeta();return WORDS.filter(w=>w&&w.word&&!x[String(w.word).toLowerCase()])}
+function f2RenderReview(){
+ const due=f2DueWords(), fresh=f2NewWords(), weak=(typeof weakWords==="function"?weakWords():[]);
+ if(document.getElementById("dueCount2"))document.getElementById("dueCount2").textContent=due.length;
+ if(document.getElementById("newCount2"))document.getElementById("newCount2").textContent=Math.min(20,fresh.length);
+ if(document.getElementById("highPriority2"))document.getElementById("highPriority2").textContent=weak.length;
+ if(document.getElementById("goalProgress2"))document.getElementById("goalProgress2").textContent=Math.min(100,Math.round(todayRecord().count/(state.settings.goal||15)*100))+"%";
+ const el=document.getElementById("dueList2"); if(!el)return;
+ const list=[...due,...weak.map(lookupLocal).filter(Boolean)].slice(0,20);
+ el.innerHTML=list.length?`<div class="card">${list.map(w=>`<div class="review-item"><b style="font-family:var(--font-mono)">${esc(w.word)}</b><span style="flex:1;color:var(--text-dim);font-size:13px">${esc(w.zh||"")}</span><button class="btn btn-sm" data-review-word="${esc(w.word)}">複習</button></div>`).join("")}</div>`:'<div class="empty">今天沒有到期單字，可以開始學新單字。</div>';
+}
+function f2RenderAnalytics(){
+ const stats=JSON.parse(localStorage.getItem("cs-vocab-quiz-stats-v3")||"{}"); let total=0,correct=0;Object.values(stats).forEach(d=>{total+=d.total||0;correct+=d.correct||0});
+ if(document.getElementById("anTotal2"))document.getElementById("anTotal2").textContent=total;
+ if(document.getElementById("anAcc2"))document.getElementById("anAcc2").textContent=(total?Math.round(correct/total*100):0)+"%";
+ if(document.getElementById("anStreak2"))document.getElementById("anStreak2").textContent=state.streak.count;
+ if(document.getElementById("anMastered2"))document.getElementById("anMastered2").textContent=masteredWords().length;
+ const week=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().slice(0,10);week.push({k,n:(stats[k]&&stats[k].total)||0})}
+ const max=Math.max(1,...week.map(x=>x.n));
+ if(document.getElementById("weekChart2"))document.getElementById("weekChart2").innerHTML=week.map(x=>`<div class="analytics-row"><span>${esc(x.k.slice(5))}</span><div class="analytics-bar"><i style="width:${Math.round(x.n/max*100)}%"></i></div><span>${x.n}</span></div>`).join("");
+ const wrong=allWrongList(); if(document.getElementById("weakRanking2"))document.getElementById("weakRanking2").innerHTML=wrong.length?wrong.slice(0,10).map(x=>`<div class="review-item"><b>${esc(x.key)}</b><span style="flex:1;color:var(--text-dim);font-size:12px">${x.kind} · 錯 ${x.wrong} 次</span></div>`).join(""):'<div class="empty">尚無錯題資料。</div>';
+ const cats=[...new Set(WORDS.map(w=>w.category).filter(Boolean))];if(document.getElementById("categoryMastery2"))document.getElementById("categoryMastery2").innerHTML=cats.map(c=>{const a=WORDS.filter(w=>w.category===c),m=a.filter(w=>state.proficiency[w.word]==="mastered").length,p=Math.round(m/Math.max(1,a.length)*100);return `<div class="analytics-row"><span>${esc(catName(c))}</span><div class="analytics-bar"><i style="width:${p}%"></i></div><span>${p}%</span></div>`}).join("");
+}
+function f2QuizOptions(base, pool, key){
+ const others=shuffle(pool.filter(w=>w.word!==base.word)).slice(0,3);return shuffle([base,...others]);
+}
+let f2Mode=document.getElementById("vqMode")?.value||"zh-en";
+function f2BuildVocab(){
+ const mode=document.getElementById("vqMode")?.value||"zh-en"; const pool=WORDS.filter(w=>w&&w.word&&w.zh&&/^[A-Za-z]/.test(w.word));if(!pool.length)return;
+ const base=shuffle(pool)[0],opts=f2QuizOptions(base,pool);window.f2V={base,opts,mode,done:false};
+ const q=document.getElementById("vqQuestion"),fb=document.getElementById("vqFeedback"),box=document.getElementById("vqOptions");
+ fb.textContent="";fb.className="quiz-feedback";
+ if(mode==="en-zh"){q.textContent=base.word;box.innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-f2v="${i}">${esc(w.zh)}</button>`).join("")}
+ else if(mode==="spell"){q.textContent=base.zh;box.innerHTML=`<input id="f2SpellInput" class="answer-input" placeholder="請輸入英文單字…"><button class="btn primary" id="f2SpellSubmit" style="margin-top:8px">送出</button>`}
+ else if(mode==="listen"){q.textContent="請聽發音後選出正確單字";box.innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-f2v="${i}">${esc(w.word)}</button>`).join("");setTimeout(()=>speak(base.word),180)}
+ else if(mode==="context" && base.example){q.textContent=base.example.replace(new RegExp("\\b"+escapeRegExp(base.word)+"\\b","gi"),"_____ ");box.innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-f2v="${i}">${esc(w.word)}</button>`).join("")}
+ else{q.textContent=base.zh;box.innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-f2v="${i}">${esc(w.word)}</button>`).join("")}
+ document.getElementById("vqMeta").textContent=mode==="en-zh"?"英文 → 中文":mode==="spell"?"拼字測驗":mode==="listen"?"聽力測驗":mode==="context"?"例句填空":"中文 → 英文";
+}
+function f2AnswerV(i){const v=window.f2V;if(!v||v.done)return;const chosen=v.opts[i],ok=v.mode==="en-zh"?chosen.zh===v.base.zh:chosen.word===v.base.word;v.done=true;document.querySelectorAll("#vqOptions .quiz-option").forEach((b,j)=>{b.disabled=true;if((v.mode==="en-zh"?v.opts[j].zh:v.opts[j].word)===(v.mode==="en-zh"?v.base.zh:v.base.word))b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong")});document.getElementById("vqFeedback").className="quiz-feedback "+(ok?"ok":"err");document.getElementById("vqFeedback").textContent=ok?"答對了！":"正確答案："+(v.mode==="en-zh"?v.base.zh:v.base.word);recordQuizStat("vocab",ok,v.base.word,v.base.zh);f2ReviewWord(v.base.word,ok);renderLearningCenter();}
+function f2SpellAnswer(){const v=window.f2V;if(!v||v.done)return;const inp=document.getElementById("f2SpellInput"),ok=inp.value.trim().toLowerCase()===v.base.word.toLowerCase();v.done=true;inp.className="answer-input "+(ok?"ok":"err");inp.disabled=true;document.getElementById("f2Feedback")?.remove();const b=document.createElement("div");b.id="f2Feedback";b.className="quiz-feedback "+(ok?"ok":"err");b.textContent=ok?"拼字正確！":"正確拼字："+v.base.word;document.getElementById("vqOptions").appendChild(b);recordQuizStat("vocab",ok,v.base.word,v.base.zh);f2ReviewWord(v.base.word,ok);renderLearningCenter();}
+function f2BuildGrammar(){const b=shuffle(F2_GRAMMAR_Q)[0];window.f2G={b,done:false};document.getElementById("gqQuestion").textContent=b.q;document.getElementById("gqOptions").innerHTML=b.o.map((x,i)=>`<button class="quiz-option" data-f2g="${i}">${esc(x)}</button>`).join("");document.getElementById("gqFeedback").textContent="";document.getElementById("gqFeedback").className="quiz-feedback";}
+function f2AnswerG(i){const g=window.f2G;if(!g||g.done)return;const ok=i===g.b.a;g.done=true;document.querySelectorAll("#gqOptions .quiz-option").forEach((b,j)=>{b.disabled=true;if(j===g.b.a)b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong")});document.getElementById("gqFeedback").className="quiz-feedback "+(ok?"ok":"err");document.getElementById("gqFeedback").textContent=(ok?"答對了！":"答錯了。")+g.b.e;recordQuizStat("grammar",ok,"grammar::"+g.b.q,g.b.e);renderLearningCenter();}
+
+/* ============ Complete Feature Pack v7 ============ */
+const F7_REL={
+  affect:{syn:['influence','impact'],ant:[],coll:['affect performance','affect quality']},
+  effect:{syn:['result','impact'],ant:[],coll:['have an effect on']},
+  economic:{syn:['financial','commercial'],ant:[],coll:['economic growth','economic policy']},
+  economical:{syn:['cost-effective','thrifty'],ant:[],coll:['economical car']},
+  obtain:{syn:['acquire','get'],ant:['lose'],coll:['obtain permission','obtain information']},
+  maintain:{syn:['keep','preserve'],ant:['abandon'],coll:['maintain quality','maintain equipment']},
+  abandon:{syn:['give up','leave'],ant:['continue'],coll:['abandon a plan','abandon a project']},
+  revenue:{syn:['income','earnings'],ant:[],coll:['annual revenue','increase revenue']},
+  expense:{syn:['cost','expenditure'],ant:[],coll:['operating expenses','business expenses']},
+  salary:{syn:['pay','annual pay'],ant:[],coll:['annual salary','salary increase']},
+  advice:{syn:['guidance','recommendation'],ant:[],coll:['give advice','follow advice']},
+  advise:{syn:['recommend','counsel'],ant:[],coll:['advise someone to do']},
+  accept:{syn:['receive','agree to'],ant:['reject'],coll:['accept an offer']},
+  except:{syn:['excluding'],ant:[],coll:['everyone except']},
+  principal:{syn:['main','chief'],ant:['minor'],coll:['principal reason']},
+  principle:{syn:['rule','belief'],ant:[],coll:['basic principle']},
+  borrow:{syn:['take out a loan'],ant:['lend'],coll:['borrow money']},
+  lend:{syn:['loan'],ant:['borrow'],coll:['lend money']},
+  achieve:{syn:['accomplish','attain'],ant:['fail'],coll:['achieve a goal']},
+  require:{syn:['need','demand'],ant:['allow'],coll:['require attention']},
+  ensure:{syn:['make sure','guarantee'],ant:[],coll:['ensure quality']}
+};
+const F7_CONF={
+  'affect/effect':'affect 多作動詞「影響」；effect 多作名詞「效果／影響」，也可作動詞「造成」。',
+  'economic/economical/economy/economics':'economic＝經濟的；economical＝節省的；economy＝經濟；economics＝經濟學。',
+  'advice/advise':'advice 是名詞；advise 是動詞。',
+  'accept/except':'accept＝接受；except＝除了。',
+  'principal/principle':'principal＝主要的／校長；principle＝原則。',
+  'raise/rise':'raise 通常及物「提高、抬起」；rise 通常不及物「上升」。',
+  'borrow/lend':'borrow＝借入；lend＝借出。',
+  'lie/lay':'lie＝躺／說謊；lay＝放置；注意過去式變化。'
+};
+function f7FindConf(word){
+  const w=String(word||'').toLowerCase();
+  return Object.entries(F7_CONF).find(([k])=>k.split('/').includes(w));
+}
+function f7RelationHtml(w){
+  const key=String(w.word||'').toLowerCase(),r=F7_REL[key],c=f7FindConf(key);
+  let h='';
+  if(r)h+=`<div class="card" style="margin-top:10px"><div class="sec-sub" style="margin:0 0 6px">詞彙延伸</div><div style="font-size:13px;line-height:1.85"><b>近義：</b>${esc(r.syn.join(' · ')||'—')}<br><b>反義：</b>${esc(r.ant.join(' · ')||'—')}<br><b>常見搭配：</b>${esc(r.coll.join(' · ')||'—')}</div></div>`;
+  if(c)h+=`<div class="card" style="margin-top:10px"><div class="sec-sub" style="margin:0 0 6px">易混淆單字</div><div style="font-size:13px;line-height:1.7">${esc(c[1])}</div></div>`;
+  return h;
+}
+const f7OrigRenderList=renderList;
+renderList=function(words,title,sub){f7OrigRenderList(words,title,sub);const el=document.getElementById('wordList');if(!el||!words.length)return;const extra=words.slice(0,8).map(f7RelationHtml).filter(Boolean).join('');if(extra)el.insertAdjacentHTML('beforeend',extra);};
+
+/* Chinese reverse lookup + fuzzy English search */
+function f7ReverseSearch(q,mode){
+  const n=String(q||'').trim().toLowerCase(); if(!n)return [];
+  let arr=WORDS.filter(w=>w&&w.word);
+  if(mode==='zh') return arr.filter(w=>String(w.zh||'').toLowerCase().includes(n)).slice(0,30);
+  if(mode==='en') return arr.filter(w=>String(w.word).toLowerCase().includes(n)).slice(0,30);
+  return arr.filter(w=>[w.word,w.zh,w.example].join(' ').toLowerCase().includes(n)).slice(0,30);
+}
+function f7InstallMainSearch(){
+ const input=document.getElementById('searchInput'),mode=document.getElementById('searchMode'),btn=document.getElementById('searchBtn'); if(!input||!mode||!btn)return;
+ const run=()=>{const q=input.value.trim();if(!q)return;const m=f7ReverseSearch(q,mode.value);if(mode.value==='zh' && m.length){document.getElementById('searchStatus').textContent='✓ 中文反查找到 '+m.length+' 個候選';document.getElementById('searchStatus').className='feedback ok';renderList(m,'中文反查：'+q,'依中文釋義搜尋，目前列出最相關的單字');}}
+ btn.addEventListener('click',e=>{if(mode.value==='zh'){e.preventDefault();e.stopImmediatePropagation();run();}},true);
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'&&mode.value==='zh'){e.preventDefault();e.stopImmediatePropagation();run();}},true);
+}
+
+/* Spaced repetition */
+function f7Srs(){try{return JSON.parse(localStorage.getItem('cs-vocab-srs-v4')||'{}')||{}}catch(_){return {}}}
+function f7SaveSrs(x){localStorage.setItem('cs-vocab-srs-v4',JSON.stringify(x))}
+function f7AddDays(date,n){const d=new Date(date);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+function f7Touch(word,ok=true){const x=f7Srs(),k=String(word).toLowerCase(),o=x[k]||{box:0,seen:0,correct:0};o.seen++;if(ok){o.correct++;o.box=Math.min(5,(o.box||0)+1)}else{o.box=0}o.due=f7AddDays(todayKey(),[1,3,7,14,30,60][o.box]||1);o.last=todayKey();x[k]=o;f7SaveSrs(x)}
+function f7Due(){const x=f7Srs(),now=todayKey();return WORDS.filter(w=>w&&w.word&&x[w.word.toLowerCase()]&&x[w.word.toLowerCase()].due<=now)}
+function f7WrapProficiency(){if(window.__f7ProfWrapped)return;window.__f7ProfWrapped=true;const old=setProficiency;setProficiency=function(word,v){old(word,v);f7Touch(word,v!=='review');};}
+
+/* True grammar question bank */
+const F7_GRAMMAR_Q=[
+ {q:'If I ___ you, I would apologize.',o:['am','were','was','be'],a:1,e:'第二類假設語氣：If + 過去式；If I were you 是固定高頻句型。'},
+ {q:'By next year, she ___ here for ten years.',o:['works','worked','will have worked','has worked'],a:2,e:'未來完成式：will have + p.p.'},
+ {q:'The report ___ before the meeting started.',o:['has finished','had been finished','is finishing','will finish'],a:1,e:'過去完成被動：had been + p.p.'},
+ {q:'I will call you as soon as I ___.',o:['arrive','will arrive','arrived','am arriving'],a:0,e:'時間副詞子句談未來時通常用現在式。'},
+ {q:'The man ___ car was stolen called the police.',o:['who','whose','which','whom'],a:1,e:'whose 後接名詞，表示所有關係。'},
+ {q:'This is the place ___ we first met.',o:['which','what','where','who'],a:2,e:'where 作關係副詞，修飾地點。'},
+ {q:'He avoided ___ about the problem.',o:['talk','to talk','talking','talked'],a:2,e:'avoid 後接 V-ing。'},
+ {q:'It was kind ___ you to help me.',o:['for','of','to','with'],a:1,e:'It is + adj. + of + 人 + to V，用來評價人的行為。'},
+ {q:'The test was ___ difficult that many students failed.',o:['such','so','too','very'],a:1,e:'so + adj./adv. + that。'},
+ {q:'___ he was tired, he kept working.',o:['Because','Although','Unless','Therefore'],a:1,e:'although 表讓步。'},
+ {q:'You will not pass ___ you study harder.',o:['if','unless','because','while'],a:1,e:'unless = if ... not。'},
+ {q:'Had I known the truth, I ___ differently.',o:['act','will act','would have acted','would act'],a:2,e:'Had I known = If I had known，屬第三類假設。'},
+ {q:'Only then ___ why she was upset.',o:['I understood','did I understand','I did understand','understood I'],a:1,e:'Only + 副詞置句首時常要求倒裝。'},
+ {q:'The bridge, ___ in 1900, is still in use.',o:['building','built','was built','which build'],a:1,e:'過去分詞可縮減被動關係子句。'},
+ {q:'I would rather ___ at home tonight.',o:['to stay','staying','stay','stayed'],a:2,e:'would rather + 原形動詞。'},
+ {q:'The teacher asked me where ___.',o:['did I live','I lived','do I live','I live?'],a:1,e:'間接問句採陳述句語序。'},
+ {q:'She suggested that he ___ earlier.',o:['leave','leaves','left','to leave'],a:0,e:'suggest + that 子句可用原形動詞。'},
+ {q:'Neither the students nor the teacher ___ ready.',o:['are','were','is','be'],a:2,e:'neither...nor 的動詞通常依靠近的主詞 teacher 判斷。'},
+ {q:'The book ___ on the desk belongs to me.',o:['lying','lies','lay','is lying'],a:0,e:'現在分詞片語 lying on the desk 修飾 book。'},
+ {q:'She has lived here ___ 2019.',o:['for','since','during','from'],a:1,e:'since + 起點時間；for + 一段期間。'},
+ {q:'He is used to ___ early.',o:['get up','getting up','got up','to get up'],a:1,e:'be used to 中的 to 是介系詞，後接 V-ing。'},
+ {q:'I look forward to ___ from you.',o:['hear','hearing','heard','to hear'],a:1,e:'look forward to + V-ing。'},
+ {q:'The more you practice, ___ you become.',o:['the better','better','the best','best'],a:0,e:'the + 比較級..., the + 比較級...。'},
+ {q:'Not until midnight ___ home.',o:['he returned','did he return','he did return','returned he'],a:1,e:'Not until 放句首時要倒裝。'}
+];
+let f7VState={};
+function f7BuildVocab(){
+ const mode=document.getElementById('vqMode')?.value||'zh-en',pool=WORDS.filter(w=>w&&w.word&&w.zh&&/^[A-Za-z]/.test(w.word));if(!pool.length)return;
+ let candidates=mode==='listen'?pool:pool;const base=shuffle(candidates)[0],opts=shuffle([base,...shuffle(pool.filter(x=>x.word!==base.word)).slice(0,3)]);f7VState={base,opts,mode,done:false};
+ const q=document.getElementById('vqQuestion'),box=document.getElementById('vqOptions'),fb=document.getElementById('vqFeedback');fb.textContent='';fb.className='quiz-feedback';
+ document.getElementById('vqMeta').textContent={"zh-en":"中文 → 英文","en-zh":"英文 → 中文","spell":"拼字測驗","listen":"聽力測驗","context":"例句填空"}[mode]||'單字測驗';
+ if(mode==='en-zh'){q.textContent=base.word;box.innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-f7v="${i}">${esc(w.zh)}</button>`).join('')}
+ else if(mode==='spell'){q.textContent=base.zh;box.innerHTML='<input id="f7Spell" class="answer-input" placeholder="請輸入英文單字…"><button id="f7SpellBtn" class="btn primary" style="margin-top:8px">送出</button>'}
+ else if(mode==='listen'){q.textContent='請聽發音後選出正確單字';box.innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-f7v="${i}">${esc(w.word)}</button>`).join('');setTimeout(()=>speak(base.word),160)}
+ else if(mode==='context'&&base.example){q.textContent=base.example.replace(new RegExp('\\\\b'+escapeRegExp(base.word)+'\\\\b','gi'),'_____');box.innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-f7v="${i}">${esc(w.word)}</button>`).join('')}
+ else{q.textContent=base.zh;box.innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-f7v="${i}">${esc(w.word)}</button>`).join('')}
+}
+function f7AnswerV(i){const v=f7VState;if(!v||v.done)return;const c=v.opts[i],ok=v.mode==='en-zh'?c.zh===v.base.zh:c.word===v.base.word;v.done=true;document.querySelectorAll('#vqOptions .quiz-option').forEach((b,j)=>{b.disabled=true;if((v.mode==='en-zh'?v.opts[j].zh:v.opts[j].word)===(v.mode==='en-zh'?v.base.zh:v.base.word))b.classList.add('correct');if(j===i&&!ok)b.classList.add('wrong')});document.getElementById('vqFeedback').className='quiz-feedback '+(ok?'ok':'err');document.getElementById('vqFeedback').textContent=ok?'答對了！':'正確答案：'+(v.mode==='en-zh'?v.base.zh:v.base.word);recordQuizStat('vocab',ok,v.base.word,v.base.zh);f7Touch(v.base.word,ok);renderLearningCenter();}
+function f7Spell(){const v=f7VState,inp=document.getElementById('f7Spell');if(!v||v.done||!inp)return;const ok=inp.value.trim().toLowerCase()===v.base.word.toLowerCase();v.done=true;inp.disabled=true;inp.className='answer-input '+(ok?'ok':'err');const fb=document.getElementById('vqFeedback');fb.className='quiz-feedback '+(ok?'ok':'err');fb.textContent=ok?'拼字正確！':'正確拼字：'+v.base.word;recordQuizStat('vocab',ok,v.base.word,v.base.zh);f7Touch(v.base.word,ok);renderLearningCenter();}
+function f7BuildGrammar(){const b=shuffle(F7_GRAMMAR_Q)[0];f7GState={b,done:false};document.getElementById('gqMeta').textContent='完整高中／會考文法題庫';document.getElementById('gqQuestion').textContent=b.q;document.getElementById('gqOptions').innerHTML=b.o.map((x,i)=>`<button class="quiz-option" data-f7g="${i}">${esc(x)}</button>`).join('');document.getElementById('gqFeedback').textContent='';document.getElementById('gqFeedback').className='quiz-feedback';}
+let f7GState={};
+function f7AnswerG(i){const g=f7GState;if(!g||g.done)return;const ok=i===g.b.a;g.done=true;document.querySelectorAll('#gqOptions .quiz-option').forEach((b,j)=>{b.disabled=true;if(j===g.b.a)b.classList.add('correct');if(j===i&&!ok)b.classList.add('wrong')});document.getElementById('gqFeedback').className='quiz-feedback '+(ok?'ok':'err');document.getElementById('gqFeedback').textContent=(ok?'答對！ ':'答錯。 ')+g.b.e;recordQuizStat('grammar',ok,'grammar:'+g.b.q,g.b.e);renderLearningCenter();}
+
+/* Exam mode */
+let f7Exam={type:'vocab',items:[],idx:0,correct:0,done:false,timer:null,sec:0};
+function f7MakeQ(type){
+ if(type==='grammar'){const b=shuffle(F7_GRAMMAR_Q)[0];return {kind:'grammar',key:b.q,q:b.q,o:b.o,a:b.o[b.a]}}
+ const pool=type==='toeic'?WORDS.filter(w=>w&&w.category==='TOEIC Core'):WORDS.filter(w=>w&&w.zh&&w.word&&/^[A-Za-z]/.test(w.word));if(!pool.length)return null;const b=shuffle(pool)[0],o=shuffle([b,...shuffle(pool.filter(w=>w.word!==b.word)).slice(0,3)]);return {kind:type==='toeic'?'toeic':'vocab',key:b.word,q:b.zh,o:o.map(x=>x.word),a:b.word}}
+function f7StartExam(){const n=Math.max(10,Math.min(50,Number(document.getElementById('examCount2').value)||20)),mins=Math.max(0,Number(document.getElementById('examMinutes2').value)||0),items=[];for(let i=0;i<n;i++){const q=f7MakeQ(f7Exam.type==='mixed'?shuffle(['vocab','grammar','toeic'])[0]:f7Exam.type);if(q)items.push(q)};if(!items.length)return;f7Exam={type:f7Exam.type,items,idx:0,correct:0,done:false,timer:null,sec:mins*60};document.getElementById('examSetup2').style.display='none';document.getElementById('examResult2').style.display='none';document.getElementById('examRun2').style.display='block';if(f7Exam.sec>0)f7Exam.timer=setInterval(()=>{f7Exam.sec--;if(document.getElementById('examProgress2'))document.getElementById('examProgress2').textContent=`${f7Exam.idx+1} / ${f7Exam.items.length} · ${Math.floor(f7Exam.sec/60)}:${String(f7Exam.sec%60).padStart(2,'0')}`;if(f7Exam.sec<=0)f7FinishExam()},1000);f7RenderExam()}
+function f7RenderExam(){const q=f7Exam.items[f7Exam.idx];f7Exam.done=false;document.getElementById('examProgress2').textContent=`${f7Exam.idx+1} / ${f7Exam.items.length}`;document.getElementById('examQuestion2').textContent=q.q;document.getElementById('examFeedback2').textContent='';document.getElementById('examOptions2').innerHTML=q.o.map((x,i)=>`<button class="quiz-option" data-f7exam="${i}">${esc(x)}</button>`).join('')}
+function f7AnswerExam(i){if(f7Exam.done)return;const q=f7Exam.items[f7Exam.idx],ok=q.o[i]===q.a;f7Exam.done=true;if(ok)f7Exam.correct++;document.querySelectorAll('#examOptions2 .quiz-option').forEach((b,j)=>{b.disabled=true;if(q.o[j]===q.a)b.classList.add('correct');if(j===i&&!ok)b.classList.add('wrong')});document.getElementById('examFeedback2').className='quiz-feedback '+(ok?'ok':'err');document.getElementById('examFeedback2').textContent=ok?'答對！':'正確答案：'+q.a;recordQuizStat(q.kind==='grammar'?'grammar':q.kind==='toeic'?'toeic':'vocab',ok,q.key,q.q);if(q.kind!=='grammar')f7Touch(q.key,ok)}
+function f7NextExam(){if(!f7Exam.done)return;if(f7Exam.idx>=f7Exam.items.length-1){f7FinishExam();return}f7Exam.idx++;f7RenderExam()}
+function f7FinishExam(){if(f7Exam.timer){clearInterval(f7Exam.timer);f7Exam.timer=null}const total=f7Exam.items.length,p=Math.round(f7Exam.correct/Math.max(1,total)*100);document.getElementById('examRun2').style.display='none';document.getElementById('examResult2').style.display='block';document.getElementById('examScore2').textContent=p;document.getElementById('examCorrect2').textContent=f7Exam.correct;document.getElementById('examWrong2').textContent=total-f7Exam.correct;document.getElementById('examPct2').textContent=p+'%';document.getElementById('examAdvice2').textContent=p>=90?'表現很好，可以提高難度或挑戰混合題。':p>=75?'表現穩定，建議查看錯題並進行智慧複習。':'建議先複習錯題與弱點，再重新挑戰。';renderAdvancedAnalytics()}
+
+function renderAdvancedAnalytics(){const stats=(()=>{try{return JSON.parse(localStorage.getItem('cs-vocab-quiz-stats-v3')||'{}')}catch(_){return {}}})();let t=0,c=0;Object.values(stats).forEach(d=>{t+=d.total||0;c+=d.correct||0});document.getElementById('anTotal2').textContent=t;document.getElementById('anAcc2').textContent=(t?Math.round(c/t*100):0)+'%';document.getElementById('anStreak2').textContent=state.streak.count;document.getElementById('anMastered2').textContent=masteredWords().length;const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().slice(0,10);days.push([k,(stats[k]||{}).total||0])}const mx=Math.max(1,...days.map(x=>x[1]));document.getElementById('weekChart2').innerHTML=days.map(x=>`<div class="analytics-row"><span>${x[0].slice(5)}</span><div class="analytics-bar"><i style="width:${Math.round(x[1]/mx*100)}%"></i></div><span>${x[1]}</span></div>`).join('');const wr=allWrongList();document.getElementById('weakRanking2').innerHTML=wr.length?wr.slice(0,12).map(x=>`<div class="review-item"><b>${esc(x.key)}</b><span style="flex:1;color:var(--text-dim);font-size:12px">${x.kind} · 錯 ${x.wrong} 次</span></div>`).join(''):'<div class="empty">目前沒有錯題資料。</div>';const cats=[...new Set(WORDS.map(w=>w.category).filter(Boolean))];document.getElementById('categoryMastery2').innerHTML=cats.map(cat=>{const arr=WORDS.filter(w=>w.category===cat),m=arr.filter(w=>state.proficiency[w.word]==='mastered').length,p=Math.round(m/Math.max(1,arr.length)*100);return `<div class="analytics-row"><span>${esc(catName(cat))}</span><div class="analytics-bar"><i style="width:${p}%"></i></div><span>${p}%</span></div>`}).join('')}
+function renderAdvancedReview(){const due=f7Due(),fresh=WORDS.filter(w=>w&&w.word&&!f7Srs()[w.word.toLowerCase()]),weak=(typeof weakWords==='function'?weakWords().map(lookupLocal).filter(Boolean):[]);document.getElementById('dueCount2').textContent=due.length;document.getElementById('newCount2').textContent=Math.min(20,fresh.length);document.getElementById('highPriority2').textContent=weak.length;document.getElementById('goalProgress2').textContent=Math.min(100,Math.round(todayRecord().count/(state.settings.goal||15)*100))+'%';const list=[...due,...weak].filter(Boolean).slice(0,20);document.getElementById('dueList2').innerHTML=list.length?`<div class="card">${list.map(w=>`<div class="review-item"><b style="font-family:var(--font-mono)">${esc(w.word)}</b><span style="flex:1;color:var(--text-dim);font-size:13px">${esc(w.zh||'')}</span><button class="btn btn-sm" data-f7review="${esc(w.word)}">複習</button></div>`).join('')}</div>`:'<div class="empty">今天沒有到期項目，可以開始新單字。</div>'}
+function f7StartReview(word){const pool=word?[lookupLocal(word)].filter(Boolean):f7Due();if(!pool.length){alert('目前沒有到期單字。');return}const base=pool[0],all=WORDS.filter(w=>w&&w.zh&&w.word&&w.word!==base.word),opts=shuffle([base,...shuffle(all).slice(0,3)]);f7VState={base,opts,mode:'zh-en',done:false};document.querySelector('.tab[data-view="vocab-quiz"]')?.click();document.getElementById('vqMeta').textContent='智慧複習';document.getElementById('vqQuestion').textContent=base.zh;document.getElementById('vqFeedback').textContent='';document.getElementById('vqOptions').innerHTML=opts.map((w,i)=>`<button class="quiz-option" data-f7v="${i}">${esc(w.word)}</button>`).join('')}
+
+/* export/import/reset also include advanced learning data */
+const f7OriginalExport=exportProgress;exportProgress=function(){const d={app:'CS Vocab Trainer',exportedAt:new Date().toISOString(),...state,advanced:{srs:f7Srs(),quizStats:(()=>{try{return JSON.parse(localStorage.getItem('cs-vocab-quiz-stats-v3')||'{}')}catch(_){return {}}})(),wrong:wrongMap()}};const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cs-vocab-full-progress-'+todayKey()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('完整學習進度已匯出','ok')}
+
+
+/* ============ Full Feature Pack listeners ============ */
+document.addEventListener('DOMContentLoaded',()=>{
+  // Main reverse-lookup search: capture only Chinese mode, leaving existing fuzzy English search intact.
+  const si=document.getElementById('searchInput'), sm=document.getElementById('searchMode');
+  if(si&&sm){
+    const reverse=()=>{
+      const q=si.value.trim(); if(!q)return;
+      const list=f7ReverseSearch(q,sm.value);
+      if(sm.value==='zh'&&list.length){
+        document.getElementById('searchStatus').textContent='✓ 中文反查找到 '+list.length+' 個單字';
+        document.getElementById('searchStatus').className='feedback ok';
+        renderList(list,'中文反查：'+q,'依中文釋義搜尋');
+      }else if(sm.value==='zh'){
+        document.getElementById('searchStatus').textContent='沒有符合的中文意思，請換個關鍵字。';
+        document.getElementById('searchStatus').className='feedback err';
+      }
+    };
+    document.getElementById('searchBtn')?.addEventListener('click',e=>{if(sm.value==='zh'){e.preventDefault();e.stopImmediatePropagation();reverse();}},true);
+    si.addEventListener('keydown',e=>{if(e.key==='Enter'&&sm.value==='zh'){e.preventDefault();e.stopImmediatePropagation();reverse();}},true);
+  }
+
+  // Wrap manual proficiency ratings with spaced repetition.
+  f7WrapProficiency();
+
+  // Quiz mode.
+  const vm=document.getElementById('vqMode');
+  vm?.addEventListener('change',f7BuildVocab);
+  const vqNext=document.getElementById('vqNext');
+  vqNext?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();f7BuildVocab()},true);
+  document.getElementById('vqOptions')?.addEventListener('click',e=>{
+    const b=e.target.closest('[data-f7v]'); if(b){e.stopImmediatePropagation();f7AnswerV(Number(b.dataset.f7v));return;}
+    if(e.target.closest('#f7SpellBtn')){e.stopImmediatePropagation();f7Spell();return;}
+  },true);
+  document.getElementById('vqSpeak')?.addEventListener('click',e=>{e.stopImmediatePropagation();if(f7VState.base)speak(f7VState.base.word);},true);
+
+  // Replace the old topic-identification grammar quiz with real four-choice questions.
+  const gqNext=document.getElementById('gqNext');
+  gqNext?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();f7BuildGrammar()},true);
+  document.getElementById('gqOptions')?.addEventListener('click',e=>{const b=e.target.closest('[data-f7g]');if(b){e.stopImmediatePropagation();f7AnswerG(Number(b.dataset.f7g));}},true);
+
+  // Analytics / review / exam tabs.
+  const aTab=document.querySelector('.tab[data-view="analytics2"]');
+  const rTab=document.querySelector('.tab[data-view="review2"]');
+  const eTab=document.querySelector('.tab[data-view="exam2"]');
+  aTab?.addEventListener('click',()=>setTimeout(renderAdvancedAnalytics,0));
+  rTab?.addEventListener('click',()=>setTimeout(renderAdvancedReview,0));
+  eTab?.addEventListener('click',()=>{document.getElementById('examSetup2').style.display='block';document.getElementById('examRun2').style.display='none';document.getElementById('examResult2').style.display='none';});
+  document.getElementById('startDue2')?.addEventListener('click',()=>f7StartReview());
+  document.getElementById('startWeak2')?.addEventListener('click',()=>{const w=(typeof weakWords==='function'?weakWords().map(lookupLocal).filter(Boolean):[])[0];f7StartReview(w?.word);});
+  document.getElementById('dueList2')?.addEventListener('click',e=>{const b=e.target.closest('[data-f7review]');if(b)f7StartReview(b.dataset.f7review);});
+
+  // Exam controls.
+  document.querySelectorAll('#examTypeSeg2 button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#examTypeSeg2 button').forEach(x=>x.classList.remove('active'));b.classList.add('active');f7Exam.type=b.dataset.examType;}));
+  document.getElementById('examStart2')?.addEventListener('click',f7StartExam);
+  document.getElementById('examNext2')?.addEventListener('click',f7NextExam);
+  document.getElementById('examFinish2')?.addEventListener('click',f7FinishExam);
+  document.getElementById('examRestart2')?.addEventListener('click',()=>{document.getElementById('examResult2').style.display='none';document.getElementById('examSetup2').style.display='block';});
+  document.getElementById('examOptions2')?.addEventListener('click',e=>{const b=e.target.closest('[data-f7exam]');if(b)f7AnswerExam(Number(b.dataset.f7exam));});
+
+  // Initial render.
+  if(document.getElementById('analytics2'))renderAdvancedAnalytics();
+  if(document.getElementById('review2'))renderAdvancedReview();
+  f7WrapProficiency();
+});
 </script>
 </body>
 </html>
